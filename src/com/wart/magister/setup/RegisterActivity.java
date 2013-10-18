@@ -1,4 +1,4 @@
-package com.wart.magister;
+package com.wart.magister.setup;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -9,6 +9,14 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.MenuItem;
+
+import com.wart.magister.Data;
+import com.wart.magister.DataRow;
+import com.wart.magister.DataTable;
+import com.wart.magister.Global;
+import com.wart.magister.MediusCall;
+import com.wart.magister.R;
+import com.wart.magister.Serializer;
 
 public class RegisterActivity extends Activity {
 

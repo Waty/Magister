@@ -1,4 +1,4 @@
-package com.wart.magister;
+package com.wart.magister.setup;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+
+import com.wart.magister.R;
 
 public class IntroActivity extends Activity {
 

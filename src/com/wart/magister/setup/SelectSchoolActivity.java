@@ -1,4 +1,4 @@
-package com.wart.magister;
+package com.wart.magister.setup;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,6 +38,11 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.wart.magister.Data;
+import com.wart.magister.MediusCall;
+import com.wart.magister.R;
+import com.wart.magister.Serializer;
 
 public class SelectSchoolActivity extends Activity {
 	private static final String TAG = "SelectSchoolActivityError";

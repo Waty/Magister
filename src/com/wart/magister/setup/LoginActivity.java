@@ -1,4 +1,4 @@
-package com.wart.magister;
+package com.wart.magister.setup;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -16,6 +16,11 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.wart.magister.Data;
+import com.wart.magister.Global;
+import com.wart.magister.MediusCall;
+import com.wart.magister.R;
 
 /**
  * Activity which displays a login screen to the user, offering registration as

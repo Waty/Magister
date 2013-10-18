@@ -26,30 +26,29 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.wart.magister.IntroActivity"
+            android:name="com.wart.magister.setup.IntroActivity"
             android:label="@string/title_activity_intro" />
         <activity
-            android:name="com.wart.magister.SelectSchoolActivity"
+            android:name="com.wart.magister.setup.SelectSchoolActivity"
             android:label="@string/title_activity_select_school"
-            android:parentActivityName="com.wart.magister.IntroActivity"
-            android:windowSoftInputMode="adjustResize|stateVisible" >
+            android:parentActivityName="com.wart.magister.setup.IntroActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".IntroActivity" />
         </activity>
         <activity
-            android:name="com.wart.magister.LoginActivity"
+            android:name="com.wart.magister.setup.LoginActivity"
             android:label="@string/title_activity_login"
-            android:parentActivityName="com.wart.magister.SelectSchoolActivity"
+            android:parentActivityName="com.wart.magister.setup.SelectSchoolActivity"
             android:windowSoftInputMode="adjustResize|stateVisible" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".SelectSchoolActivity" />
         </activity>
         <activity
-            android:name="com.wart.magister.RegisterActivity"
+            android:name="com.wart.magister.setup.RegisterActivity"
             android:label="@string/title_activity_register"
-            android:parentActivityName="com.wart.magister.LoginActivity" >
+            android:parentActivityName="com.wart.magister.setup.LoginActiviy" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.wart.magister.LoginActivity" />

@@ -14,6 +14,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
+import com.wart.magister.setup.IntroActivity;
+import com.wart.magister.setup.SelectSchoolActivity;
+
 public class MainActivity extends FragmentActivity implements ActionBar.OnNavigationListener {
 
 	/**
