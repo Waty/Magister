@@ -535,7 +535,7 @@ public class MediusCall {
 			try {
 				return mediusCall.writer.readString();
 			} catch (IOException ex) {
-				Log.e(TAG, "getMediusVersion", ex);
+				Log.e(TAG, "Error in getMediusVersion", ex);
 			}
 		}
 		return null;
@@ -564,9 +564,7 @@ public class MediusCall {
 		caller.writer.writeVariant("1.0.21");
 		caller.writer.writePlaceholderWithSize(pos);
 		caller.response = null;
-		if (caller.MakeTheCall(MediusCall.clientID, caller.ROInterface, caller.ROMethod, caller.writer.getBuffer(), caller.writer.pos)) {
-			return caller;
-		}
+		if (caller.MakeTheCall(MediusCall.clientID, caller.ROInterface, caller.ROMethod, caller.writer.getBuffer(), caller.writer.pos)) return caller;
 		return null;
 	}
 }

@@ -6,7 +6,7 @@ import java.util.Iterator;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class SyncTask extends AsyncTask<Void, String, Void> {
+public class SyncTask extends AsyncTask<Void, Integer, Void> {
 
 	private static final String TAG = "SyncTask";
 
@@ -16,22 +16,17 @@ public class SyncTask extends AsyncTask<Void, String, Void> {
 	}
 
 	@Override
-	protected Void doInBackground(Void... params) {
-		Install();
-		return null;
-	}
-
-	@Override
 	protected void onPostExecute(Void voids) {
 	}
 
 	@Override
-	protected void onProgressUpdate(String... strings) {
+	protected void onProgressUpdate(Integer... strings) {
 
 	}
 
-	private Long Install() {
-		publishProgress("setLicentie");
+	@Override
+	protected Void doInBackground(Void... params) {
+		Log.v(TAG, "setLicentie");
 
 		HashMap<String, String> tableNamesHash = new HashMap<String, String>();
 		tableNamesHash.put("gebruiker", "Profiel");
@@ -52,7 +47,7 @@ public class SyncTask extends AsyncTask<Void, String, Void> {
 		MediusCall call = MediusCall.RegisterDevice(settings);
 		if (call != null) {
 			try {
-				publishProgress("8;Apparaat registreren");
+				Log.v(TAG, "8;Apparaat registreren");
 				Serializer reader = new Serializer(call.response);
 				reader.readROBoolean();
 				if (reader.readByte() != 1) return null;
@@ -63,11 +58,10 @@ public class SyncTask extends AsyncTask<Void, String, Void> {
 					Iterator<HashMap<String, String>> iterator = Global.profiles.iterator();
 					while (iterator.hasNext()) {
 						HashMap<String, String> hash = iterator.next();
-						if (Global.toDBString(hash.get("code")).equals(Global.toDBString(dt.get(0x0).get("code")))) {
-							if (Global.toDBString(hash.get("medius")).equals(Data.formatMediusUrl(Data.GetMediusURL()))) {
-								Log.e(TAG, "Dit profiel bestaat al. Deinstalleer de applicatie om je profiel opnieuw aan te maken met een nieuwe uitnodiging. Het personaliseren wordt nu afgebroken.");
-								return null;
-							}
+						if (Global.toDBString(hash.get("code")).equals(Global.toDBString(dt.get(0x0).get("code"))) && Global.toDBString(hash.get("medius")).equals(Data.formatMediusUrl(Data.GetMediusURL()))) {
+							Log.e(TAG, "Dit profiel bestaat al. Deinstalleer de applicatie om je profiel opnieuw aan te maken met een nieuwe uitnodiging. Het personaliseren wordt nu afgebroken.");
+							return null;
+
 						}
 					}
 				}
@@ -93,15 +87,15 @@ public class SyncTask extends AsyncTask<Void, String, Void> {
 							Data.SetKey(Data.GetDeviceCode() + "|" + Global.getVersionFromPackageInfo() + "|" + Global.getMD5Hash());
 							Data.SetBetaald(true);
 							Data.SetRol("leerling");
-							publishProgress("setdata");
+							Log.v(TAG, "setdata");
 						} else if (tableNamesHash.containsKey(dt.TableName.toLowerCase().trim())) status = tableNamesHash.get(dt.TableName.toLowerCase().trim());
-						publishProgress(new String[] {"Downloading: " + status});
+						Log.v(TAG, "Downloading: " + status);
 						// TODO: Fix this: database.AddTable(dt, true);
 						if (reader.pos < datalen) dt = reader.readDataTable();
 						else dt = null;
 					}
 				}
-				publishProgress("100;Sending personal device info");
+				Log.v(TAG, "100;Sending personal device info");
 				call = MediusCall.updateDeviceInfo();
 				if (call != null) {
 					Global.setSharedValue("startup", Integer.valueOf(0x1));
@@ -117,7 +111,7 @@ public class SyncTask extends AsyncTask<Void, String, Void> {
 					DataTable rechtenTable = reader.readDataTable();
 					DataTable betaald = reader.readDataTable();
 					String foutStr = reader.getLastError();
-					if (!Global.isNullOrEmpty(foutStr)) publishProgress("Fout;" + foutStr);
+					if (!Global.isNullOrEmpty(foutStr)) Log.v(TAG, "Fout;" + foutStr);
 					// if(rechtenTable != null) //TODO: Fix this:
 					// MaestroRechten.werkRechtenBij(rechtenTable);
 
@@ -143,29 +137,16 @@ public class SyncTask extends AsyncTask<Void, String, Void> {
 						Global.updateCurrentProfile();
 					}
 				}
-				if (Global.isNullOrEmpty(Data.GetMagisterSuite())) publishProgress("Fout;Er is een fout opgetreden tijdens het installeren. Onbekende Magistersuite versie.");
+				if (Global.isNullOrEmpty(Data.GetMagisterSuite())) Log.e(TAG, "Er is een fout opgetreden tijdens het installeren. Onbekende Magistersuite versie.");
 
-				try {
-					// TODO: Should run on UI thread... Global.SaveProfile();
-				} catch (Exception ex) {
-					Log.e(TAG, "Fout;Profile not saved!");
-				} finally {
-					if (isCancelled()) {
-						return null;
-					}
-				}
 			} catch (Exception problem) {
 				Log.e(TAG, "Error tijdens personalisatie.");
 				// TODO:
 				// Global.bAuthenticate = false;
 				// Global.LoadMenuStructure();
-				publishProgress(new String[0x1]);
-			}
-			if (isCancelled()) {
-				return null;
+				// publishProgress(new String[0x1]);
 			}
 		}
 		return null;
 	}
-
 }
