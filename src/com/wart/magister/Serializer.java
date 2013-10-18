@@ -130,7 +130,7 @@ public class Serializer {
 
 	public String getLastError() {
 		try {
-			String str = Global.DBString(readString());
+			String str = Global.toDBString(readString());
 			return str;
 		} catch (Exception localException) {
 			System.out.println("Foutmelding: " + localException.getMessage());
@@ -151,7 +151,7 @@ public class Serializer {
 		DataTable result = new DataTable();
 		try {
 			result.TableName = readString();
-			if (Global.IsNullOrEmpty(result.TableName)) result.TableName = "Unknown";
+			if (Global.isNullOrEmpty(result.TableName)) result.TableName = "Unknown";
 
 			int fields = readInteger();
 			if (fields != 0) {

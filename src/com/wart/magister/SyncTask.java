@@ -25,6 +25,11 @@ public class SyncTask extends AsyncTask<Void, String, Void> {
 	protected void onPostExecute(Void voids) {
 	}
 
+	@Override
+	protected void onProgressUpdate(String... strings) {
+
+	}
+
 	private Long Install() {
 		publishProgress("setLicentie");
 
@@ -58,8 +63,8 @@ public class SyncTask extends AsyncTask<Void, String, Void> {
 					Iterator<HashMap<String, String>> iterator = Global.profiles.iterator();
 					while (iterator.hasNext()) {
 						HashMap<String, String> hash = iterator.next();
-						if (Global.DBString(hash.get("code")).equals(Global.DBString(dt.get(0x0).get("code")))) {
-							if (Global.DBString(hash.get("medius")).equals(Data.formatMediusUrl(Data.GetMediusURL()))) {
+						if (Global.toDBString(hash.get("code")).equals(Global.toDBString(dt.get(0x0).get("code")))) {
+							if (Global.toDBString(hash.get("medius")).equals(Data.formatMediusUrl(Data.GetMediusURL()))) {
 								Log.e(TAG, "Dit profiel bestaat al. Deinstalleer de applicatie om je profiel opnieuw aan te maken met een nieuwe uitnodiging. Het personaliseren wordt nu afgebroken.");
 								return null;
 							}
@@ -78,16 +83,14 @@ public class SyncTask extends AsyncTask<Void, String, Void> {
 						if (dt.TableName.equalsIgnoreCase("gebruiker")) {
 							status = "Profiel";
 							DataRow row = dt.get(0);
-							Data.SetUser(Global.DBString(row.get("loginnaam")));
-							Data.SetidGebr(Global.DBInt(row.get("idgebr")));
-							Data.SetidType(Global.DBInt(row.get("idtype")));
-							Data.SetFullName(Global.DBString(row.get("naam_vol")));
-							Data.SetDeviceCode(Global.DBString(row.get("devicecode")));
-							Data.SetidPers(Global.DBInt(row.get("idpers")));
-							Data.SetidLeer(Global.DBInt(row.get("idleer")));
-							// TODO: Fix this: Data.SetKey(Data.GetDeviceCode()
-							// + "|" + Global.getVersionFromPackageInfo() + "|"
-							// + Global.MD5Hash);
+							Data.SetUser(Global.toDBString(row.get("loginnaam")));
+							Data.SetidGebr(Global.toDBInt(row.get("idgebr")));
+							Data.SetidType(Global.toDBInt(row.get("idtype")));
+							Data.SetFullName(Global.toDBString(row.get("naam_vol")));
+							Data.SetDeviceCode(Global.toDBString(row.get("devicecode")));
+							Data.SetidPers(Global.toDBInt(row.get("idpers")));
+							Data.SetidLeer(Global.toDBInt(row.get("idleer")));
+							Data.SetKey(Data.GetDeviceCode() + "|" + Global.getVersionFromPackageInfo() + "|" + Global.getMD5Hash());
 							Data.SetBetaald(true);
 							Data.SetRol("leerling");
 							publishProgress("setdata");
@@ -101,20 +104,20 @@ public class SyncTask extends AsyncTask<Void, String, Void> {
 				publishProgress("100;Sending personal device info");
 				call = MediusCall.updateDeviceInfo();
 				if (call != null) {
-					Global.SetSharedValue("startup", Integer.valueOf(0x1));
+					Global.setSharedValue("startup", Integer.valueOf(0x1));
 					reader = new Serializer(call.response);
 					reader.readROBoolean();
 					reader.SkipROBinary();
-					Global.DBInt(reader.readVariant());
-					Global.DBBool(reader.readVariant());
-					Global.DBBool(reader.readVariant());
-					String magisterSuite = Global.DBString(reader.readVariant());
-					Global.DBString(reader.readVariant());
-					Global.DBString(reader.readVariant());
+					Global.toDBInt(reader.readVariant());
+					Global.toDBBool(reader.readVariant());
+					Global.toDBBool(reader.readVariant());
+					String magisterSuite = Global.toDBString(reader.readVariant());
+					Global.toDBString(reader.readVariant());
+					Global.toDBString(reader.readVariant());
 					DataTable rechtenTable = reader.readDataTable();
 					DataTable betaald = reader.readDataTable();
 					String foutStr = reader.getLastError();
-					if (!Global.IsNullOrEmpty(foutStr)) publishProgress("Fout;" + foutStr);
+					if (!Global.isNullOrEmpty(foutStr)) publishProgress("Fout;" + foutStr);
 					// if(rechtenTable != null) //TODO: Fix this:
 					// MaestroRechten.werkRechtenBij(rechtenTable);
 
@@ -132,15 +135,15 @@ public class SyncTask extends AsyncTask<Void, String, Void> {
 						if (magisterSuite.equalsIgnoreCase("") && Data.GetMagisterSuite().equalsIgnoreCase("")) {
 							Data.SetMagisterSuite("5.3.7");
 							Data.SetKey(Data.GetDeviceCode() + "|" + Global.getVersionFromPackageInfo());
-							Global.UpdateCurrentProfile();
+							Global.updateCurrentProfile();
 						}
 					} else {
 						Data.SetMagisterSuite(magisterSuite);
 						Data.SetKey(Data.GetDeviceCode() + "|" + Global.getVersionFromPackageInfo());
-						Global.UpdateCurrentProfile();
+						Global.updateCurrentProfile();
 					}
 				}
-				if (Global.IsNullOrEmpty(Data.GetMagisterSuite())) publishProgress("Fout;Er is een fout opgetreden tijdens het installeren. Onbekende Magistersuite versie.");
+				if (Global.isNullOrEmpty(Data.GetMagisterSuite())) publishProgress("Fout;Er is een fout opgetreden tijdens het installeren. Onbekende Magistersuite versie.");
 
 				try {
 					// TODO: Should run on UI thread... Global.SaveProfile();

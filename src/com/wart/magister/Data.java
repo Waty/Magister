@@ -8,7 +8,7 @@ import android.net.Uri;
 
 public class Data {
 	public static void Clear() {
-		SharedPreferences.Editor localEditor = Global.GetSharedPreferenceValue("profile").edit();
+		SharedPreferences.Editor localEditor = Global.getSharedPreferenceValue("profile").edit();
 		localEditor.clear();
 		localEditor.commit();
 	}
@@ -18,132 +18,132 @@ public class Data {
 	}
 
 	public static String GetAppFamily() {
-		return Global.GetSharedPreferenceValue("profile").getString("appfamily", "");
+		return Global.getSharedPreferenceValue("profile").getString("appfamily", "");
 	}
 
 	public static String GetAppFolder() {
-		return Global.GetSharedPreferenceValue("profile").getString("appfolder", "");
+		return Global.getSharedPreferenceValue("profile").getString("appfolder", "");
 	}
 
 	public static String GetAppName() {
-		return Global.GetSharedPreferenceValue("profile").getString("appname", "");
+		return Global.getSharedPreferenceValue("profile").getString("appname", "");
 	}
 
 	public static String GetApplicatieNaam() {
-		return Global.GetSharedPreferenceValue("profile").getString("applicatienaam", "");
+		return Global.getSharedPreferenceValue("profile").getString("applicatienaam", "");
 	}
 
 	public static boolean GetApplicationRunning() {
-		return Global.GetSharedPreferenceValue("profile").getBoolean("applicationrunning", false);
+		return Global.getSharedPreferenceValue("profile").getBoolean("applicationrunning", false);
 	}
 
 	public static boolean GetBetaald() {
-		return Global.GetSharedPreferenceValue("profile").getBoolean("betaald", false);
+		return Global.getSharedPreferenceValue("profile").getBoolean("betaald", false);
 	}
 
 	public static String GetBetalingsURL() {
-		return Global.GetSharedPreferenceValue("profile").getString("betalingsurl", "");
+		return Global.getSharedPreferenceValue("profile").getString("betalingsurl", "");
 	}
 
 	public static String GetDatabase() {
-		return Global.GetSharedPreferenceValue("profile").getString("db", "");
+		return Global.getSharedPreferenceValue("profile").getString("db", "");
 	}
 
 	@SuppressWarnings("deprecation")
 	public static Date GetDateModified() {
-		return new Date(Global.GetSharedPreferenceValue("profile").getString("datemodified", Global.NODATE.toGMTString()));
+		return new Date(Global.getSharedPreferenceValue("profile").getString("datemodified", Global.NODATE.toGMTString()));
 	}
 
 	public static boolean GetDeleteProfile() {
-		return Global.GetSharedPreferenceValue("profile").getBoolean("deleteprofile", false);
+		return Global.getSharedPreferenceValue("profile").getBoolean("deleteprofile", false);
 	}
 
 	public static String GetDeviceCode() {
-		return Global.GetSharedPreferenceValue("profile").getString("devicecode", "");
+		return Global.getSharedPreferenceValue("profile").getString("devicecode", "");
 	}
 
 	public static String GetFullName() {
-		return Global.GetSharedPreferenceValue("profile").getString("naam", "");
+		return Global.getSharedPreferenceValue("profile").getString("naam", "");
 	}
 
 	public static boolean GetIsExecuted() {
-		return Global.GetSharedPreferenceValue("profile").getBoolean("isexecuted", false);
+		return Global.getSharedPreferenceValue("profile").getBoolean("isexecuted", false);
 	}
 
 	public static String GetKey() {
-		return Global.GetSharedPreferenceValue("profile").getString("key", "");
+		return Global.getSharedPreferenceValue("profile").getString("key", "");
 	}
 
 	public static String getLicense() {
-		return Global.GetSharedPreferenceValue("profile").getString("licentie", "");
+		return Global.getSharedPreferenceValue("profile").getString("licentie", "");
 	}
 
 	public static boolean GetLoaded() {
-		return Global.GetSharedPreferenceValue("profile").getBoolean("loaded", false);
+		return Global.getSharedPreferenceValue("profile").getBoolean("loaded", false);
 	}
 
 	public static String GetMagisterSuite() {
-		return Global.GetSharedPreferenceValue("profile").getString("magistersuite", "");
+		return Global.getSharedPreferenceValue("profile").getString("magistersuite", "");
 	}
 
 	protected static String GetMediusForwarder() {
-		return Global.GetSharedPreferenceValue("profile").getString("mediusforwarder", "");
+		return Global.getSharedPreferenceValue("profile").getString("mediusforwarder", "");
 	}
 
 	public static String GetMediusURL() {
-		return Global.GetSharedPreferenceValue("profile").getString("medius", "");
+		return Global.getSharedPreferenceValue("profile").getString("medius", "");
 	}
 
 	public static String GetMediusVersion() {
-		return Global.GetSharedPreferenceValue("profile").getString("mediusversion", "");
+		return Global.getSharedPreferenceValue("profile").getString("mediusversion", "");
 	}
 
 	public static String GetMenuItemName() {
-		return Global.GetSharedPreferenceValue("profile").getString("menuitemname", "");
+		return Global.getSharedPreferenceValue("profile").getString("menuitemname", "");
 	}
 
 	public static boolean GetNormalExit() {
-		return Global.GetSharedPreferenceValue("profile").getBoolean("normalexit", true);
+		return Global.getSharedPreferenceValue("profile").getBoolean("normalexit", true);
 	}
 
 	public static boolean GetProfileExists() {
-		return Global.GetSharedPreferenceValue("profile").getBoolean("profileexists", true);
+		return Global.getSharedPreferenceValue("profile").getBoolean("profileexists", true);
 	}
 
 	public static int GetProfilePosition() {
-		return Global.GetSharedPreferenceValue("profile").getInt("profileposition", -1);
+		return Global.getSharedPreferenceValue("profile").getInt("profileposition", -1);
 	}
 
 	public static String GetRol() {
-		return Global.GetSharedPreferenceValue("profile").getString("rol", "");
+		return Global.getSharedPreferenceValue("profile").getString("rol", "");
 	}
 
 	public static int GetSchoolID() {
-		return Global.GetSharedPreferenceValue("profile").getInt("schoolid", -1);
+		return Global.getSharedPreferenceValue("profile").getInt("schoolid", -1);
 	}
 
 	public static boolean GetServiceRunning() {
-		return Global.GetSharedPreferenceValue("profile").getBoolean("servicerunning", false);
+		return Global.getSharedPreferenceValue("profile").getBoolean("servicerunning", false);
 	}
 
 	public static String GetUser() {
-		return Global.GetSharedPreferenceValue("profile").getString("code", "");
+		return Global.getSharedPreferenceValue("profile").getString("code", "");
 	}
 
 	public static int GetidGebr() {
-		return Global.GetSharedPreferenceValue("profile").getInt("idgebr", -1);
+		return Global.getSharedPreferenceValue("profile").getInt("idgebr", -1);
 	}
 
 	public static int GetidLeer() {
-		return Global.GetSharedPreferenceValue("profile").getInt("idleer", -1);
+		return Global.getSharedPreferenceValue("profile").getInt("idleer", -1);
 	}
 
 	public static int GetidPers() {
-		return Global.GetSharedPreferenceValue("profile").getInt("idpers", -1);
+		return Global.getSharedPreferenceValue("profile").getInt("idpers", -1);
 	}
 
 	public static int GetidType() {
-		return Global.GetSharedPreferenceValue("profile").getInt("idtype", -1);
+		return Global.getSharedPreferenceValue("profile").getInt("idtype", -1);
 	}
 
 	public static void InitializeApp(Context paramContext) {
@@ -159,131 +159,131 @@ public class Data {
 	}
 
 	public static void SetAppFamily(String paramString) {
-		Global.SetSharedPreferenceValues("profile", "appfamily", paramString);
+		Global.setSharedPreferenceValues("profile", "appfamily", paramString);
 	}
 
 	public static void SetAppFolder(String paramString) {
-		Global.SetSharedPreferenceValues("profile", "appfolder", paramString);
+		Global.setSharedPreferenceValues("profile", "appfolder", paramString);
 	}
 
 	public static void SetAppName(String paramString) {
-		Global.SetSharedPreferenceValues("profile", "appname", paramString);
+		Global.setSharedPreferenceValues("profile", "appname", paramString);
 	}
 
 	public static void SetApplicatieNaam(String paramString) {
-		Global.SetSharedPreferenceValues("profile", "applicatienaam", paramString);
+		Global.setSharedPreferenceValues("profile", "applicatienaam", paramString);
 	}
 
 	public static void SetApplicationRunning(Boolean paramBoolean) {
-		Global.SetSharedPreferenceValues("profile", "applicationrunning", paramBoolean);
+		Global.setSharedPreferenceValues("profile", "applicationrunning", paramBoolean);
 	}
 
 	public static void SetBetaald(Boolean paramBoolean) {
-		Global.SetSharedPreferenceValues("profile", "betaald", paramBoolean);
+		Global.setSharedPreferenceValues("profile", "betaald", paramBoolean);
 	}
 
 	public static void SetBetalingsURL(String paramString) {
-		Global.SetSharedPreferenceValues("profile", "betalingsurl", paramString);
+		Global.setSharedPreferenceValues("profile", "betalingsurl", paramString);
 	}
 
 	public static void SetDatabase(String paramString) {
-		Global.SetSharedPreferenceValues("profile", "db", paramString);
+		Global.setSharedPreferenceValues("profile", "db", paramString);
 	}
 
 	public static void SetDateModified(Date paramDate) {
-		Global.SetSharedPreferenceValues("profile", "datemodified", paramDate);
+		Global.setSharedPreferenceValues("profile", "datemodified", paramDate);
 	}
 
 	public static void SetDeleteProfile(Boolean paramBoolean) {
-		Global.SetSharedPreferenceValues("profile", "deleteprofile", paramBoolean);
+		Global.setSharedPreferenceValues("profile", "deleteprofile", paramBoolean);
 	}
 
 	public static void SetDeviceCode(String paramString) {
-		Global.SetSharedPreferenceValues("profile", "devicecode", paramString);
+		Global.setSharedPreferenceValues("profile", "devicecode", paramString);
 	}
 
 	public static void SetFullName(String paramString) {
-		Global.SetSharedPreferenceValues("profile", "naam", paramString);
+		Global.setSharedPreferenceValues("profile", "naam", paramString);
 	}
 
 	public static void SetIsExecuted(Boolean paramBoolean) {
-		Global.SetSharedPreferenceValues("profile", "isexecuted", paramBoolean);
+		Global.setSharedPreferenceValues("profile", "isexecuted", paramBoolean);
 	}
 
 	public static void SetKey(String paramString) {
-		Global.SetSharedPreferenceValues("profile", "key", paramString);
+		Global.setSharedPreferenceValues("profile", "key", paramString);
 	}
 
 	public static void setLicense(String paramString) {
-		Global.SetSharedPreferenceValues("profile", "licentie", paramString);
+		Global.setSharedPreferenceValues("profile", "licentie", paramString);
 	}
 
 	public static void SetLoaded(Boolean paramBoolean) {
-		Global.SetSharedPreferenceValues("profile", "loaded", paramBoolean);
+		Global.setSharedPreferenceValues("profile", "loaded", paramBoolean);
 	}
 
 	public static void SetMagisterSuite(String paramString) {
-		Global.SetSharedPreferenceValues("profile", "magistersuite", paramString);
+		Global.setSharedPreferenceValues("profile", "magistersuite", paramString);
 	}
 
 	protected static void SetMediusForwarder(String paramString) {
-		Global.SetSharedPreferenceValues("profile", "mediusforwarder", paramString);
+		Global.setSharedPreferenceValues("profile", "mediusforwarder", paramString);
 	}
 
 	public static void SetMediusURL(String paramString) {
-		Global.SetSharedPreferenceValues("profile", "medius", buildMediusUrl(paramString));
+		Global.setSharedPreferenceValues("profile", "medius", buildMediusUrl(paramString));
 	}
 
 	public static void SetMediusVersion(String paramString) {
-		Global.SetSharedPreferenceValues("profile", "mediusversion", paramString);
+		Global.setSharedPreferenceValues("profile", "mediusversion", paramString);
 	}
 
 	public static void SetMenuItemName(String paramString) {
-		Global.SetSharedPreferenceValues("profile", "menuitemname", paramString);
+		Global.setSharedPreferenceValues("profile", "menuitemname", paramString);
 	}
 
 	public static void SetNormalExit(Boolean paramBoolean) {
-		Global.SetSharedPreferenceValues("profile", "normalexit", paramBoolean);
+		Global.setSharedPreferenceValues("profile", "normalexit", paramBoolean);
 	}
 
 	public static void SetProfileExists(Boolean paramBoolean) {
-		Global.SetSharedPreferenceValues("profile", "profileexists", paramBoolean);
+		Global.setSharedPreferenceValues("profile", "profileexists", paramBoolean);
 	}
 
 	public static void SetProfilePosition(int paramInt) {
-		Global.SetSharedPreferenceValues("profile", "profileposition", Integer.valueOf(paramInt));
+		Global.setSharedPreferenceValues("profile", "profileposition", Integer.valueOf(paramInt));
 	}
 
 	public static void SetRol(String paramString) {
-		Global.SetSharedPreferenceValues("profile", "rol", paramString);
+		Global.setSharedPreferenceValues("profile", "rol", paramString);
 	}
 
 	public static void SetSchoolID(int paramInt) {
-		Global.SetSharedPreferenceValues("profile", "schoolid", Integer.valueOf(paramInt));
+		Global.setSharedPreferenceValues("profile", "schoolid", Integer.valueOf(paramInt));
 	}
 
 	public static void SetServiceRunning(Boolean paramBoolean) {
-		Global.SetSharedPreferenceValues("profile", "servicerunning", paramBoolean);
+		Global.setSharedPreferenceValues("profile", "servicerunning", paramBoolean);
 	}
 
 	public static void SetUser(String paramString) {
-		Global.SetSharedPreferenceValues("profile", "code", paramString);
+		Global.setSharedPreferenceValues("profile", "code", paramString);
 	}
 
 	public static void SetidGebr(int paramInt) {
-		Global.SetSharedPreferenceValues("profile", "idgebr", Integer.valueOf(paramInt));
+		Global.setSharedPreferenceValues("profile", "idgebr", Integer.valueOf(paramInt));
 	}
 
 	public static void SetidLeer(int paramInt) {
-		Global.SetSharedPreferenceValues("profile", "idleer", Integer.valueOf(paramInt));
+		Global.setSharedPreferenceValues("profile", "idleer", Integer.valueOf(paramInt));
 	}
 
 	public static void SetidPers(int paramInt) {
-		Global.SetSharedPreferenceValues("profile", "idpers", Integer.valueOf(paramInt));
+		Global.setSharedPreferenceValues("profile", "idpers", Integer.valueOf(paramInt));
 	}
 
 	public static void SetidType(int paramInt) {
-		Global.SetSharedPreferenceValues("profile", "idtype", Integer.valueOf(paramInt));
+		Global.setSharedPreferenceValues("profile", "idtype", Integer.valueOf(paramInt));
 	}
 
 	public static String buildMediusUrl(final String url) {

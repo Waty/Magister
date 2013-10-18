@@ -94,7 +94,7 @@ public class MediusCall {
 	}
 
 	public static void setLicense(String license) {
-		if (Global.IsNullOrEmpty(license)) crypto = null;
+		if (Global.isNullOrEmpty(license)) crypto = null;
 		else {
 			crypto = new TeaEncryption(license);
 			Log.i(TAG, "Set crypto passfrase to " + license);
@@ -109,7 +109,7 @@ public class MediusCall {
 
 		final MediusCall mediusCall = new MediusCall();
 		mediusCall.writer.WriteROHeader(MediusCall.clientID, "Global", "Authenticate");
-		if (Global.IsNullOrEmpty(Data.GetUser())) mediusCall.writer.writeString(Data.GetAppName());
+		if (Global.isNullOrEmpty(Data.GetUser())) mediusCall.writer.writeString(Data.GetAppName());
 		else mediusCall.writer.writeString(String.format("%s:%s", Data.GetUser(), Data.GetAppName()));
 		mediusCall.writer.writeString(randomUUID.toString());
 		mediusCall.writer.writeString("");
@@ -349,7 +349,7 @@ public class MediusCall {
 									}
 								}
 							}
-							if (datablobCanBeSaved && UseCaching && content != null && !Global.IsNullOrEmpty(cacheKey)) SaveDataBlob(cacheKey, content.toByteArray());
+							if (datablobCanBeSaved && UseCaching && content != null && !Global.isNullOrEmpty(cacheKey)) SaveDataBlob(cacheKey, content.toByteArray());
 
 							cacheKey = "";
 							return !Offline;
@@ -545,9 +545,7 @@ public class MediusCall {
 		final MediusCall caller = getCaller("MaestroLogin", "RegisterDevice", false);
 		caller.writer.writeROBinaryWithObjects(dataTable);
 		caller.response = null;
-		if (caller.MakeTheCall(MediusCall.clientID, caller.ROInterface, caller.ROMethod, caller.writer.getBuffer(), caller.writer.pos)) {
-			return caller;
-		}
+		if (caller.MakeTheCall(MediusCall.clientID, caller.ROInterface, caller.ROMethod, caller.writer.getBuffer(), caller.writer.pos)) return caller;
 		return null;
 	}
 

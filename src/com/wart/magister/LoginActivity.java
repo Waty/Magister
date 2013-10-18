@@ -191,13 +191,13 @@ public class LoginActivity extends Activity {
 		protected Boolean doInBackground(Void... params) {
 			if (!isCancelled()) {
 				if (MediusCall.Login(mUsername, mPassword) || MediusCall.getLoggedInState() == 0x5) return true;
-				Log.e(TAG, Global.DBString(MediusCall.getResultStr()));
+				Log.e(TAG, Global.toDBString(MediusCall.getResultStr()));
 			}
 			return false;
 		}
 
 		@Override
-		protected void onPostExecute(final Boolean success) {
+		protected void onPostExecute(Boolean success) {
 			mAuthTask = null;
 			showProgress(false);
 
