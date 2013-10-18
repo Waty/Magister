@@ -19,12 +19,11 @@ public class DataTable extends ArrayList<DataRow> {
 
 	public DataTable(ArrayList<DataRow> rows) {
 		if (rows.size() > 0) {
-			Iterator<String> var6 = ((HashMap<String, Object>) rows.get(0))
-					.keySet().iterator();
+			Iterator<String> var6 = ((HashMap<String, Object>) rows.get(0)).keySet().iterator();
 
 			while (var6.hasNext()) {
 				String var7 = var6.next();
-				this.Columns.add(new DataColumn(var7));
+				Columns.add(new DataColumn(var7));
 			}
 		}
 
@@ -42,18 +41,14 @@ public class DataTable extends ArrayList<DataRow> {
 	public DataTable(Cursor var1) {
 		if (var1 != null && var1.moveToFirst()) {
 			String[] columnNames = var1.getColumnNames();
-			int length = columnNames.length;
 
-			for (int i = 0; i < length; ++i)
-				this.Columns.add(new DataColumn(columnNames[i]));
+			for (String name : columnNames)
+				Columns.add(new DataColumn(name));
 
 			do {
 				DataRow row = new DataRow();
-
-				for (int i = 0; i < length; ++i) {
-					String name = columnNames[i];
+				for (String name : columnNames)
 					row.put(name, var1.getString(var1.getColumnIndex(name)));
-				}
 
 				this.add(row);
 			} while (var1.moveToNext());
@@ -61,47 +56,44 @@ public class DataTable extends ArrayList<DataRow> {
 
 	}
 
-	public DataTable(String[] strings) {
-		int length = strings.length;
-
-		for (int i = 0; i < length; i++)
-			this.Columns.add(new DataColumn(strings[i]));
+	public DataTable(String... strings) {
+		for (String name : strings)
+			Columns.add(new DataColumn(name));
 	}
 
 	public Map<String, Integer> getColumnMapping() {
 		HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
-		for (int i = 0; i < this.Columns.size(); ++i)
-			hashMap.put(this.Columns.get(i).Name, Integer.valueOf(i));
+		for (int i = 0; i < Columns.size(); ++i)
+			hashMap.put(Columns.get(i).Name, Integer.valueOf(i));
 		return hashMap;
 	}
 
 	public String[] getColumnNames() {
 		ArrayList<String> var1 = new ArrayList<String>();
-
-		for (int i = 0; i < this.Columns.size(); i++)
-			var1.add(this.Columns.get(i).Name);
+		for (DataColumn column : Columns)
+			var1.add(column.Name);
 
 		return (String[]) var1.toArray();
 	}
 
 	public ArrayList<DataRow> getValuesForColumn(String name) {
-		ArrayList<DataRow> var2 = new ArrayList<DataRow>();
-		Iterator<DataRow> var3 = this.iterator();
+		ArrayList<DataRow> result = new ArrayList<DataRow>();
+		Iterator<DataRow> itter = iterator();
 
-		while (var3.hasNext())
-			var2.add((DataRow) (var3.next()).get(name));
+		while (itter.hasNext())
+			result.add((DataRow) itter.next().get(name));
 
-		return var2;
+		return result;
 	}
 
 	public DataRow newRow() {
-		DataRow var1 = new DataRow();
-		Iterator<DataColumn> var2 = this.Columns.iterator();
+		DataRow row = new DataRow();
+		Iterator<DataColumn> itter = Columns.iterator();
 
-		while (var2.hasNext())
-			var1.put(var2.next().Name, "");
+		while (itter.hasNext())
+			row.put(itter.next().Name, "");
 
-		return var1;
+		return row;
 	}
 
 	public void Sort(String var1) {
