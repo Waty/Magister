@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 public class Serializer {
+	
 	public static enum VariantType {
 		Boolean(11), Byte(17), Char(22), Currency(6), Date(7), Decimal(14), Double(5), Empty(0), Error(10), Int64(20), Integer(3), LongWord(19), Null(1), Object(12), ShortInt(16), Single(4), SmallInt(2), String(8), UInt64(21), Undefined(65535), Word(
 				18);
@@ -232,20 +233,10 @@ public class Serializer {
 		case 1: {
 			final String string3 = readString();
 			String s3 = readString();
-			if (string3.equalsIgnoreCase("emaestroexception") && s3.length() > 3) {
-				final int int1 = Integer.parseInt(s3.substring(0, 3));
-				s3 = s3.substring(4);
-				switch (int1) {
-				case 601:
-					Data.SetProfileExists(false);
-				case 403:
-				case 603:
-					throw new SecurityException(s3);
-				}
-			}
-			throw new ROException(s3);
+			if (string3.equalsIgnoreCase("emaestroexception") && s3.length() > 3) throw new ROException(s3);
 		}
 		}
+		return false;
 	}
 
 	public short readShortInt() throws IOException {

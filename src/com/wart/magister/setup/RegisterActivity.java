@@ -7,7 +7,6 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.wart.magister.Data;
@@ -73,11 +72,11 @@ public class RegisterActivity extends Activity {
 			DataTable settings = new DataTable("os", "hardwareid", "appname", "appversion", "suite", "rol");
 			DataRow srow = settings.newRow();
 			srow.put("os", "Android " + Global.Device.OSVersion + "(Model: " + Global.Device.Model + ")");
-			srow.put("appname", Data.GetAppFamily());
+			srow.put("appname", Data.getAppName());
 			srow.put("appversion", Global.Device.Version);
 			srow.put("hardwareid", Global.Device.HardwareID);
-			srow.put("suite", Data.GetMagisterSuite());
-			srow.put("rol", Data.GetRol());
+			srow.put("suite", Data.getMagisterSuite());
+			srow.put("rol", Data.getRol());
 			settings.add(srow);
 			MediusCall call = MediusCall.RegisterDevice(settings);
 			if (call != null) {
@@ -93,7 +92,7 @@ public class RegisterActivity extends Activity {
 						Iterator<HashMap<String, String>> iterator = Global.profiles.iterator();
 						while (iterator.hasNext()) {
 							HashMap<String, String> hash = iterator.next();
-							if (Global.toDBString(hash.get("code")).equals(Global.toDBString(dt.get(0x0).get("code"))) && Global.toDBString(hash.get("medius")).equals(Data.formatMediusUrl(Data.GetMediusURL()))) {
+							if (Global.toDBString(hash.get("code")).equals(Global.toDBString(dt.get(0x0).get("code"))) && Global.toDBString(hash.get("medius")).equals(Data.formatMediusUrl(Data.getMediusURL()))) {
 								publishProgress(ERRROR, "Dit profiel bestaat al. Deinstalleer de applicatie om je profiel opnieuw aan te maken met een nieuwe uitnodiging. Het personaliseren wordt nu afgebroken.");
 								return null;
 
@@ -113,17 +112,15 @@ public class RegisterActivity extends Activity {
 							if (dt.TableName.equalsIgnoreCase("gebruiker")) {
 								status = "Profiel";
 								DataRow row = dt.get(0);
-								Data.SetUser(Global.toDBString(row.get("loginnaam")));
-								Data.SetidGebr(Global.toDBInt(row.get("idgebr")));
-								Data.SetidType(Global.toDBInt(row.get("idtype")));
-								Data.SetFullName(Global.toDBString(row.get("naam_vol")));
-								Data.SetDeviceCode(Global.toDBString(row.get("devicecode")));
-								Data.SetidPers(Global.toDBInt(row.get("idpers")));
-								Data.SetidLeer(Global.toDBInt(row.get("idleer")));
-								Data.SetKey(Data.GetDeviceCode() + "|" + Global.getVersionFromPackageInfo() + "|" + Global.getMD5Hash());
-								Data.SetBetaald(true);
-								Data.SetRol("leerling");
-								Log.v(TAG, "setdata");
+								Data.setUsername(Global.toDBString(row.get("loginnaam")));
+								Data.setUserId(Global.toDBInt(row.get("idgebr")));
+								Data.setIdType(Global.toDBInt(row.get("idtype")));
+								Data.setFullName(Global.toDBString(row.get("naam_vol")));
+								Data.setDeviceCode(Global.toDBString(row.get("devicecode")));
+								Data.setEmployeeId(Global.toDBInt(row.get("idpers")));
+								Data.setStudentId(Global.toDBInt(row.get("idleer")));
+								Data.setKey(Data.getDeviceCode() + "|" + Global.getVersionFromPackageInfo() + "|" + Global.getMD5Hash());
+								Data.setRol("leerling");
 							} else if (tableNamesHash.containsKey(dt.TableName.toLowerCase().trim())) status = tableNamesHash.get(dt.TableName.toLowerCase().trim());
 							publishProgress("Downloading: " + status);
 							// TODO: Fix this: database.AddTable(dt, true);
@@ -162,19 +159,19 @@ public class RegisterActivity extends Activity {
 						// Boolean.valueOf(Global.IsNullOrEmpty(Global.DBString(betaald.get(0x0).get("licentietoken")))
 						// ? 0x0 : 0x1));
 						// }
-						if (magisterSuite.equalsIgnoreCase(Data.GetMagisterSuite()) || magisterSuite.equalsIgnoreCase("")) {
-							if (magisterSuite.equalsIgnoreCase("") && Data.GetMagisterSuite().equalsIgnoreCase("")) {
-								Data.SetMagisterSuite("5.3.7");
-								Data.SetKey(Data.GetDeviceCode() + "|" + Global.getVersionFromPackageInfo());
+						if (magisterSuite.equalsIgnoreCase(Data.getMagisterSuite()) || magisterSuite.equalsIgnoreCase("")) {
+							if (magisterSuite.equalsIgnoreCase("") && Data.getMagisterSuite().equalsIgnoreCase("")) {
+								Data.setMagisterSuite("5.3.7");
+								Data.setKey(Data.getDeviceCode() + "|" + Global.getVersionFromPackageInfo());
 								Global.updateCurrentProfile();
 							}
 						} else {
-							Data.SetMagisterSuite(magisterSuite);
-							Data.SetKey(Data.GetDeviceCode() + "|" + Global.getVersionFromPackageInfo());
+							Data.setMagisterSuite(magisterSuite);
+							Data.setKey(Data.getDeviceCode() + "|" + Global.getVersionFromPackageInfo());
 							Global.updateCurrentProfile();
 						}
 					}
-					if (Global.isNullOrEmpty(Data.GetMagisterSuite())) publishProgress(ERRROR, "Er is een fout opgetreden tijdens het installeren. Onbekende Magistersuite versie.");
+					if (Global.isNullOrEmpty(Data.getMagisterSuite())) publishProgress(ERRROR, "Er is een fout opgetreden tijdens het installeren. Onbekende Magistersuite versie.");
 
 				} catch (Exception problem) {
 					publishProgress(ERRROR, "Error tijdens personalisatie.");

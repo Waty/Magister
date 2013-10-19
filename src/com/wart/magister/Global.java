@@ -3,15 +3,13 @@ package com.wart.magister;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.xmlpull.v1.XmlSerializer;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -55,18 +53,18 @@ public final class Global {
 		return "";
 	}
 
-	public static SharedPreferences getSharedPreferenceValue(String paramString) {
+	public static SharedPreferences getSharedPreferences() {
 		if (AppContext == null) return null;
-		return AppContext.getSharedPreferences(paramString, 0);
+		return AppContext.getSharedPreferences("com.wart.magister.global", Context.MODE_PRIVATE);
 	}
 
 	public static boolean isNullOrEmpty(String paramString) {
 		return paramString == null || paramString.equals("") || paramString.equalsIgnoreCase("null") || paramString.length() <= 0;
 	}
 
-	public static void setSharedPreferenceValues(final String s, final String s2, final Object o) {
+	public static void setSharedPreferenceValues(final String s2, final Object o) {
 		if (Global.AppContext != null) {
-			final SharedPreferences getSharedPreferenceValue = getSharedPreferenceValue(s);
+			final SharedPreferences getSharedPreferenceValue = getSharedPreferences();
 			if (getSharedPreferenceValue != null) {
 				final SharedPreferences.Editor edit = getSharedPreferenceValue.edit();
 				if (o instanceof String) {
@@ -104,7 +102,7 @@ public final class Global {
 			int n = 0;
 			int n2 = -1;
 			for (int n3 = 0; n3 < Global.profiles.size() && n == 0; ++n3) {
-				if (toDBString(Global.profiles.get(n3).get("naam")).equalsIgnoreCase(Data.GetFullName())) {
+				if (toDBString(Global.profiles.get(n3).get("naam")).equalsIgnoreCase(Data.getFullName())) {
 					n2 = n3;
 					n = 1;
 				}
@@ -112,62 +110,21 @@ public final class Global {
 			if (n2 > -1) {
 				final HashMap<String, String> hashMap = Global.profiles.get(n2);
 				hashMap.remove("magistersuite");
-				hashMap.put("magistersuite", Data.GetMagisterSuite());
-				saveProfileXML();
+				hashMap.put("magistersuite", Data.getMagisterSuite());
+				saveProfile();
 			}
 		}
 	}
 
-	public static void saveProfileXML() {
+	public static void saveProfile() {
 		try {
-			File file = new File(new StringBuilder(String.valueOf(Data.GetAppFolder())).append("/users.xml").toString());
-			if (!file.exists()) file.createNewFile();
-
-			FileOutputStream fos = new FileOutputStream(file);
-			XmlSerializer serializer = android.util.Xml.newSerializer();
-			serializer.setOutput(fos, "UTF-8");
-			serializer.startDocument(null, Boolean.valueOf(true));
-			serializer.startTag(null, "users");
-			if (Global.profiles != null) {
-				Iterator<HashMap<String, String>> itter = Global.profiles.iterator();
-				while (itter.hasNext()) {
-					HashMap<String, String> map = itter.next();
-					serializer.startTag(null, "user");
-					serializer.startTag(null, "naam");
-					serializer.text(Global.toDBString(map.get("naam")));
-					serializer.endTag(null, "naam");
-					serializer.startTag(null, "code");
-					serializer.text(Global.toDBString(map.get("code")));
-					serializer.endTag(null, "code");
-					serializer.startTag(null, "medius");
-					serializer.text(Data.formatMediusUrl(Global.toDBString(map.get("medius"))));
-					serializer.endTag(null, "medius");
-					serializer.startTag(null, "dbnr");
-					serializer.text(Global.toDBString(map.get("dbnr")));
-					serializer.endTag(null, "dbnr");
-					serializer.startTag(null, "rol");
-					serializer.text(Global.toDBString(map.get("rol")));
-					serializer.endTag(null, "rol");
-					serializer.startTag(null, "magistersuite");
-					serializer.text(Global.toDBString(map.get("magistersuite")));
-					serializer.endTag(null, "magistersuite");
-					serializer.startTag(null, "licentie");
-					serializer.text(Global.toDBString(map.get("licentie")));
-					serializer.endTag(null, "licentie");
-					if (map.containsKey("delete")) {
-						serializer.startTag(null, "delete");
-						serializer.text(Global.toDBString(map.get("delete")));
-						serializer.endTag(null, "delete");
-					}
-					serializer.endTag(null, "user");
-				}
-			}
-			serializer.endTag(null, "users");
-			serializer.endDocument();
-			serializer.flush();
-			fos.close();
+			File file = new File(AppContext.getDir("profile", Context.MODE_PRIVATE), "map");
+			ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(file));
+			outputStream.writeObject(profiles);
+			outputStream.flush();
+			outputStream.close();
 		} catch (Exception e) {
-			Log.e(TAG, "Error in SaveProfrileXml", e);
+			Log.e(TAG, "Error in SaveProfile", e);
 		}
 		return;
 	}
@@ -176,13 +133,14 @@ public final class Global {
 		if (isNullOrEmpty(Global.MD5Hash) && Global.AppContext != null) {
 			try {
 				File file = new File(Global.AppContext.getPackageCodePath());
-				FileInputStream fileInputStream = new FileInputStream(file);
+				FileInputStream fis = new FileInputStream(file);
 				byte[] array = new byte[(int) file.length()];
 				int read;
 				for (int i = 0; i < array.length; i += read) {
-					read = fileInputStream.read(array, i, array.length - i);
+					read = fis.read(array, i, array.length - i);
 					if (read < 0) break;
 				}
+				fis.close();
 				MessageDigest digester = MessageDigest.getInstance("MD5");
 				digester.update(array, 0, array.length);
 				Global.MD5Hash = new BigInteger(1, digester.digest()).toString(16);

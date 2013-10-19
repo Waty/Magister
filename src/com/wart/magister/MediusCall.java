@@ -85,7 +85,7 @@ public class MediusCall {
 			MediusCall.httpContext = new BasicHttpContext();
 			MediusCall.httpCookies = new BasicCookieStore();
 			final BasicClientCookie basicClientCookie = new BasicClientCookie("M5.Client.ID", MediusCall.clientGUID.toString());
-			basicClientCookie.setDomain(Uri.parse(Data.GetMediusURL()).getHost());
+			basicClientCookie.setDomain(Uri.parse(Data.getMediusURL()).getHost());
 			basicClientCookie.setPath("/");
 			MediusCall.httpCookies.addCookie(basicClientCookie);
 			MediusCall.httpContext.setAttribute("http.cookie-store", MediusCall.httpCookies);
@@ -109,8 +109,8 @@ public class MediusCall {
 
 		final MediusCall mediusCall = new MediusCall();
 		mediusCall.writer.WriteROHeader(MediusCall.clientID, "Global", "Authenticate");
-		if (Global.isNullOrEmpty(Data.GetUser())) mediusCall.writer.writeString(Data.GetAppName());
-		else mediusCall.writer.writeString(String.format("%s:%s", Data.GetUser(), Data.GetAppName()));
+		if (Global.isNullOrEmpty(Data.getUsername())) mediusCall.writer.writeString(Data.getAppName());
+		else mediusCall.writer.writeString(String.format("%s:%s", Data.getUsername(), Data.getAppName()));
 		mediusCall.writer.writeString(randomUUID.toString());
 		mediusCall.writer.writeString("");
 		mediusCall.writer.writeString(makeSimpleKey(MediusCall.clientGUID));
@@ -256,9 +256,9 @@ public class MediusCall {
 		mediusCall.ROMethod = roMethod;
 		mediusCall.writer.WriteROHeader(MediusCall.clientID, roInterface, roMethod);
 		if (withCredentials) {
-			mediusCall.writer.writeInteger(Data.GetidGebr());
-			mediusCall.writer.writeString(Data.GetRol());
-			mediusCall.writer.writeString(Data.GetKey());
+			mediusCall.writer.writeInteger(Data.getUserId());
+			mediusCall.writer.writeString(Data.getRol());
+			mediusCall.writer.writeString(Data.getKey());
 		}
 		return mediusCall;
 	}
@@ -273,7 +273,7 @@ public class MediusCall {
 		boolean didServerCall = false;
 		boolean datablobCanBeSaved = false;
 		error = null;
-		byte[] cache = GetDataBlob(cacheKey, true);
+		byte[] cache = getDataBlob(cacheKey, true);
 		if (Global.doMediusCallToServer || !UseCaching || cache == null) {
 			didServerCall = true;
 			HttpClient httpClient = getHttpClient();
@@ -295,7 +295,7 @@ public class MediusCall {
 				Offline = true;
 				while (idx < retries) { // Try it 5 times
 					Log.v(TAG, "MakeTheCall to " + roInterface + "." + roMethod + " attempt #" + idx);
-					HttpPost post = new HttpPost(Data.GetMediusURL());
+					HttpPost post = new HttpPost(Data.getMediusURL());
 					post.setEntity(payload);
 					try {
 						HttpResponse httpResponse = httpClient.execute(post, httpContext);
@@ -369,9 +369,9 @@ public class MediusCall {
 		return false;
 	}
 
-	private byte[] GetDataBlob(String filename, boolean anyBlob) {
+	private byte[] getDataBlob(String filename, boolean anyBlob) {
 		if (filename != null && filename.length() > 0) {
-			File blobFile = new File(String.valueOf(Data.GetAppFolder()) + "/" + filename + ".blob");
+			File blobFile = new File(String.valueOf(Data.getAppFolder()) + "/" + filename + ".blob");
 			if (!blobFile.exists()) return null;
 			FileInputStream fis = null;
 			try {
@@ -393,9 +393,9 @@ public class MediusCall {
 
 	private void SaveDataBlob(final String s, final byte[] array) {
 		try {
-			File file = new File(String.valueOf(Data.GetAppFolder()) + "/" + String.format("%s.blob", s));
+			File file = new File(String.valueOf(Data.getAppFolder()) + "/" + String.format("%s.blob", s));
 			if (!file.exists()) {
-				new File(Data.GetAppFolder()).mkdirs();
+				new File(Data.getAppFolder()).mkdirs();
 				file.createNewFile();
 			}
 			FileOutputStream fos = new FileOutputStream(file);
@@ -414,7 +414,7 @@ public class MediusCall {
 		ByteArrayOutputStream content = null;
 
 		for (int i = 0; i < 5; i++) {
-			final HttpPost post = new HttpPost(Data.GetMediusURL());
+			final HttpPost post = new HttpPost(Data.getMediusURL());
 			post.setEntity(authrequest);
 			try {
 				HttpEntity rawResponse = MediusCall.authClient.execute(post, MediusCall.httpContext).getEntity();
@@ -551,15 +551,15 @@ public class MediusCall {
 
 	public static MediusCall updateDeviceInfo() {
 		final MediusCall caller = getCaller("MaestroLogin", "MaestroCall", false);
-		caller.writer.writeInteger(Data.GetidGebr());
-		caller.writer.writeString(Data.GetRol());
-		caller.writer.writeString(Data.GetKey());
+		caller.writer.writeInteger(Data.getUserId());
+		caller.writer.writeString(Data.getRol());
+		caller.writer.writeString(Data.getKey());
 		caller.writer.writeString("UpdateDeviceInfo");
 		caller.writer.writeByte((byte) 1);
 		caller.writer.writeInt32(0);
 		final int pos = caller.writer.pos;
 		caller.writer.writeVariant(2);
-		caller.writer.writeVariant(Integer.parseInt(Data.GetDeviceCode()));
+		caller.writer.writeVariant(Integer.parseInt(Data.getDeviceCode()));
 		caller.writer.writeVariant(String.format("Android %s(Model: %s)", Global.Device.OSVersion, Global.Device.Model));
 		caller.writer.writeVariant("1.0.21");
 		caller.writer.writePlaceholderWithSize(pos);

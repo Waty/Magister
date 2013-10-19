@@ -206,8 +206,8 @@ public class SelectSchoolActivity extends Activity {
 
 		@Override
 		protected Boolean doInBackground(School... params) {
-			Data.SetMediusURL(params[0].URL);
-			HttpPost post = new HttpPost(Data.GetMediusURL());
+			Data.setMediusURL(params[0].URL);
+			HttpPost post = new HttpPost(Data.getMediusURL());
 			byte[] request = new byte[54];
 			request[0] = 0x52;
 			request[1] = 0x4f;
