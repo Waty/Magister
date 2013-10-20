@@ -2,11 +2,14 @@ package com.wart.magister.setup;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map.Entry;
 
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.wart.magister.Data;
@@ -100,13 +103,8 @@ public class RegisterActivity extends Activity {
 						}
 					}
 					int prevpos = 0;
-					int buffersize = reader.getBuffer().length / 80;
-					int percentage = 0;
-					int count = 20;
 					while (dt != null && prevpos < reader.pos) {
 						prevpos = reader.pos;
-						count += 4;
-						percentage = prevpos / buffersize;
 						String status = "";
 						if (!isCancelled()) {
 							if (dt.TableName.equalsIgnoreCase("gebruiker")) {
@@ -121,7 +119,7 @@ public class RegisterActivity extends Activity {
 								Data.setStudentId(Global.toDBInt(row.get("idleer")));
 								Data.setKey(Data.getDeviceCode() + "|" + Global.getVersionFromPackageInfo() + "|" + Global.getMD5Hash());
 								Data.setRol("leerling");
-							} else if (tableNamesHash.containsKey(dt.TableName.toLowerCase().trim())) status = tableNamesHash.get(dt.TableName.toLowerCase().trim());
+							} else if (tableNamesHash.containsKey(dt.TableName.toLowerCase(Locale.ENGLISH).trim())) status = tableNamesHash.get(dt.TableName.toLowerCase().trim());
 							publishProgress("Downloading: " + status);
 							// TODO: Fix this: database.AddTable(dt, true);
 							if (reader.pos < datalen) dt = reader.readDataTable();
@@ -145,20 +143,17 @@ public class RegisterActivity extends Activity {
 						DataTable betaald = reader.readDataTable();
 						String foutStr = reader.getLastError();
 						if (!Global.isNullOrEmpty(foutStr)) publishProgress(ERRROR, foutStr);
-						// if(rechtenTable != null) //TODO: Fix this:
-						// MaestroRechten.werkRechtenBij(rechtenTable);
 
-						// if(betaald != null && betaald.size() > 0) {
-						// if(betaald.get(0x0).get("ondergrens") != null);
-						// //TODO:
-						// Fix this: database.OpenQuery(betaald.get(0x0) +
-						// Global.DBString(betaald.get(0x0).get("ondergrens")) +
-						// "\') ");
-						// if((DataRow)betaald.get(0x0).get("licentietoken") !=
-						// null) Data.SetBetaald(true);//TODO:
-						// Boolean.valueOf(Global.IsNullOrEmpty(Global.DBString(betaald.get(0x0).get("licentietoken")))
-						// ? 0x0 : 0x1));
-						// }
+						// TODO: Implement the rechtenTable DataTable
+						if (rechtenTable != null) for (DataRow row : rechtenTable)
+							for (Entry<String, Object> e : row.entrySet())
+								Log.v(TAG, e.getKey() + "=" + e.getValue());
+
+						// TODO: Implement the betaald DataTable
+						if (betaald != null) for (DataRow row : betaald)
+							for (Entry<String, Object> e : row.entrySet())
+								Log.v(TAG, e.getKey() + "=" + e.getValue());
+
 						if (magisterSuite.equalsIgnoreCase(Data.getMagisterSuite()) || magisterSuite.equalsIgnoreCase("")) {
 							if (magisterSuite.equalsIgnoreCase("") && Data.getMagisterSuite().equalsIgnoreCase("")) {
 								Data.setMagisterSuite("5.3.7");
@@ -173,8 +168,9 @@ public class RegisterActivity extends Activity {
 					}
 					if (Global.isNullOrEmpty(Data.getMagisterSuite())) publishProgress(ERRROR, "Er is een fout opgetreden tijdens het installeren. Onbekende Magistersuite versie.");
 
-				} catch (Exception problem) {
+				} catch (Exception ex) {
 					publishProgress(ERRROR, "Error tijdens personalisatie.");
+					Log.e(TAG, "Exception in RegisterActivity", ex);
 					// TODO:
 					// Global.bAuthenticate = false;
 					// Global.LoadMenuStructure();

@@ -11,6 +11,7 @@ import android.database.Cursor;
 
 public class DataTable extends ArrayList<DataRow> {
 
+	private static final long serialVersionUID = 9169178206463011965L;
 	public String TableName = "";
 	public List<DataColumn> Columns = new ArrayList<DataColumn>();
 

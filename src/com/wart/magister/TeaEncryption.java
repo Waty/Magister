@@ -1,6 +1,7 @@
 package com.wart.magister;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Locale;
 
 public class TeaEncryption {
 
@@ -42,14 +43,14 @@ public class TeaEncryption {
 		byte[] pass = new byte[0];
 
 		try {
-			pass = passphrase.toLowerCase().getBytes("UTF-8");
+			pass = passphrase.toLowerCase(Locale.ENGLISH).getBytes("UTF-8");
 		} catch (UnsupportedEncodingException var15) {
 			var15.printStackTrace();
 		}
 
 		for (int i = 0; i < passphrase.length(); i++) {
 			byte c = pass[i];
-			if ((Character.isLetterOrDigit(c) || 95 == c || 32 == c) && (32 != c || i <= 0 || 32 != pass[i - 1])) {
+			if ((Character.isLetterOrDigit(c) || 95 == c || CYCLES == c) && (CYCLES != c || i <= 0 || CYCLES != pass[i - 1])) {
 				int ofs = (charcount & 3) << 3;
 				int msk = 255 << ofs;
 				byte y = (byte) ((msk & _key[(charcount & 15) >>> 2]) >>> ofs);
@@ -74,7 +75,7 @@ public class TeaEncryption {
 				int n4 = array[i + 7] << 24 | (0xFF & array[i + 6]) << 16 | (0xFF & array[i + 5]) << 8 | 0xFF & array[i + 4];
 				int n5 = n3 ^ n2;
 				int n6 = 0;
-				int n7 = 32;
+				int n7 = CYCLES;
 				while (true) {
 					final int n8 = n7 - 1;
 					if (n7 <= 0) {
@@ -105,7 +106,7 @@ public class TeaEncryption {
 				int var5 = var1[var4 + 3] << 24 | (255 & var1[var4 + 2]) << 16 | (255 & var1[var4 + 1]) << 8 | 255 & var1[var4];
 				int var6 = var1[var4 + 7] << 24 | (255 & var1[var4 + 6]) << 16 | (255 & var1[var4 + 5]) << 8 | 255 & var1[var4 + 4];
 				int var7 = -957401312;
-				int var8 = 32;
+				int var8 = CYCLES;
 
 				while (true) {
 					int var9 = var8 - 1;

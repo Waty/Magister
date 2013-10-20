@@ -9,6 +9,7 @@ import java.security.MessageDigest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import android.content.Context;
@@ -67,15 +68,11 @@ public final class Global {
 			final SharedPreferences getSharedPreferenceValue = getSharedPreferences();
 			if (getSharedPreferenceValue != null) {
 				final SharedPreferences.Editor edit = getSharedPreferenceValue.edit();
-				if (o instanceof String) {
-					edit.putString(s2, toDBString(o));
-				} else if (o instanceof Integer) {
-					edit.putInt(s2, toDBInt(o));
-				} else if (o instanceof Boolean) {
-					edit.putBoolean(s2, toDBBool(o));
-				} else if (o instanceof Date) {
-					edit.putString(s2, ((Date) o).toGMTString());
-				}
+				if (o instanceof String) edit.putString(s2, toDBString(o));
+				else if (o instanceof Integer) edit.putInt(s2, toDBInt(o));
+				else if (o instanceof Boolean) edit.putBoolean(s2, toDBBool(o));
+				else if (o instanceof Date) edit.putString(s2, ((Date) o).toGMTString());
+
 				if (edit.commit()) Log.v("Global", String.format("Opslaan %s gelukt", s2));
 				else Log.w("Global", String.format("Opslaan %s mislukt!", s2));
 			}
@@ -83,7 +80,7 @@ public final class Global {
 	}
 
 	public static void setSharedValue(final String s, final Object o) {
-		Global.sharedDictionary.put(s.toLowerCase(), o);
+		Global.sharedDictionary.put(s.toLowerCase(Locale.ENGLISH), o);
 	}
 
 	public boolean isOnline() {
