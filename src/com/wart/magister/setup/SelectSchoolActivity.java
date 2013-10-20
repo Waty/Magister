@@ -206,8 +206,8 @@ public class SelectSchoolActivity extends Activity {
 
 		@Override
 		protected Boolean doInBackground(School... params) {
-			Data.setMediusURL(params[0].URL);
-			HttpPost post = new HttpPost(Data.getMediusURL());
+			Data.set(Data.MEDIUSURL, params[0].URL);
+			HttpPost post = new HttpPost(Data.getString(Data.MEDIUSURL));
 			byte[] request = new byte[54];
 			request[0] = 0x52;
 			request[1] = 0x4f;
@@ -265,8 +265,8 @@ public class SelectSchoolActivity extends Activity {
 					Serializer serializer = new Serializer(content.toByteArray());
 					if (serializer.readROHeader(null, "login", "getschoolname")) {
 
-						Data.setLicense(serializer.readString());
-						MediusCall.setLicense(Data.getLicense());
+						Data.set(Data.LICENSE, serializer.readString());
+						MediusCall.setLicense(Data.getString(Data.LICENSE));
 						return true;
 					} else Log.e(TAG, "Geblokkeerd door webserver");
 				} else Log.e(TAG, "TestMedius timed out");

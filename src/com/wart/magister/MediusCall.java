@@ -62,7 +62,7 @@ public class MediusCall {
 		MethodeName = "";
 		writer = new Serializer(4096);
 		if (MediusCall.clientID.length < 1) {
-			MediusCall.clientID = ToByteArray(MediusCall.clientGUID);
+			MediusCall.clientID = toByteArray(MediusCall.clientGUID);
 		}
 	}
 
@@ -85,7 +85,7 @@ public class MediusCall {
 			MediusCall.httpContext = new BasicHttpContext();
 			MediusCall.httpCookies = new BasicCookieStore();
 			final BasicClientCookie basicClientCookie = new BasicClientCookie("M5.Client.ID", MediusCall.clientGUID.toString());
-			basicClientCookie.setDomain(Uri.parse(Data.getMediusURL()).getHost());
+			basicClientCookie.setDomain(Uri.parse(Data.getString(Data.MEDIUSURL)).getHost());
 			basicClientCookie.setPath("/");
 			MediusCall.httpCookies.addCookie(basicClientCookie);
 			MediusCall.httpContext.setAttribute("http.cookie-store", MediusCall.httpCookies);
@@ -109,8 +109,8 @@ public class MediusCall {
 
 		final MediusCall mediusCall = new MediusCall();
 		mediusCall.writer.WriteROHeader(MediusCall.clientID, "Global", "Authenticate");
-		if (Global.isNullOrEmpty(Data.getUsername())) mediusCall.writer.writeString(Data.getAppName());
-		else mediusCall.writer.writeString(String.format("%s:%s", Data.getUsername(), Data.getAppName()));
+		if (Global.isNullOrEmpty(Data.getString(Data.USERNAME))) mediusCall.writer.writeString(Data.getString(Data.APPNAME));
+		else mediusCall.writer.writeString(String.format("%s:%s", Data.getString(Data.USERNAME), Data.getString(Data.APPNAME)));
 		mediusCall.writer.writeString(randomUUID.toString());
 		mediusCall.writer.writeString("");
 		mediusCall.writer.writeString(makeSimpleKey(MediusCall.clientGUID));
@@ -131,7 +131,7 @@ public class MediusCall {
 	}
 
 	public static String getSimpleKey(UUID var0, String var1) {
-		byte[] var2 = ToByteArray(var0);
+		byte[] var2 = toByteArray(var0);
 		char[] var3 = new char[136 + EncTable.length()];
 		System.arraycopy(EncTable.toCharArray(), 0, var3, 0, EncTable.length());
 		int var4 = 0;
@@ -168,7 +168,7 @@ public class MediusCall {
 		return new String(var8);
 	}
 
-	static byte[] ToByteArray(UUID paramUUID) {
+	static byte[] toByteArray(UUID paramUUID) {
 		long l1 = paramUUID.getMostSignificantBits();
 		long l2 = paramUUID.getLeastSignificantBits();
 		byte[] arrayOfByte = new byte[16];
@@ -256,9 +256,9 @@ public class MediusCall {
 		mediusCall.ROMethod = roMethod;
 		mediusCall.writer.WriteROHeader(MediusCall.clientID, roInterface, roMethod);
 		if (withCredentials) {
-			mediusCall.writer.writeInteger(Data.getUserId());
-			mediusCall.writer.writeString(Data.getRol());
-			mediusCall.writer.writeString(Data.getKey());
+			mediusCall.writer.writeInteger(Data.getInt(Data.USERID));
+			mediusCall.writer.writeString(Data.getString(Data.ROLE));
+			mediusCall.writer.writeString(Data.getString(Data.KEY));
 		}
 		return mediusCall;
 	}
@@ -295,7 +295,7 @@ public class MediusCall {
 				Offline = true;
 				while (idx < retries) { // Try it 5 times
 					Log.v(TAG, "MakeTheCall to " + roInterface + "." + roMethod + " attempt #" + idx);
-					HttpPost post = new HttpPost(Data.getMediusURL());
+					HttpPost post = new HttpPost(Data.getString(Data.MEDIUSURL));
 					post.setEntity(payload);
 					try {
 						HttpResponse httpResponse = httpClient.execute(post, httpContext);
@@ -371,7 +371,7 @@ public class MediusCall {
 
 	private byte[] getDataBlob(String filename, boolean anyBlob) {
 		if (filename != null && filename.length() > 0) {
-			File blobFile = new File(String.valueOf(Data.getAppFolder()) + "/" + filename + ".blob");
+			File blobFile = new File(String.valueOf(Data.getString(Data.APPFOLDER)) + "/" + filename + ".blob");
 			if (!blobFile.exists()) return null;
 			FileInputStream fis = null;
 			try {
@@ -393,9 +393,9 @@ public class MediusCall {
 
 	private void SaveDataBlob(final String s, final byte[] array) {
 		try {
-			File file = new File(String.valueOf(Data.getAppFolder()) + "/" + String.format("%s.blob", s));
+			File file = new File(String.valueOf(Data.getString(Data.APPFOLDER)) + "/" + String.format("%s.blob", s));
 			if (!file.exists()) {
-				new File(Data.getAppFolder()).mkdirs();
+				new File(Data.getString(Data.APPFOLDER)).mkdirs();
 				file.createNewFile();
 			}
 			FileOutputStream fos = new FileOutputStream(file);
@@ -414,7 +414,7 @@ public class MediusCall {
 		ByteArrayOutputStream content = null;
 
 		for (int i = 0; i < 5; i++) {
-			final HttpPost post = new HttpPost(Data.getMediusURL());
+			final HttpPost post = new HttpPost(Data.getString(Data.MEDIUSURL));
 			post.setEntity(authrequest);
 			try {
 				HttpEntity rawResponse = MediusCall.authClient.execute(post, MediusCall.httpContext).getEntity();
@@ -551,20 +551,46 @@ public class MediusCall {
 
 	public static MediusCall updateDeviceInfo() {
 		final MediusCall caller = getCaller("MaestroLogin", "MaestroCall", false);
-		caller.writer.writeInteger(Data.getUserId());
-		caller.writer.writeString(Data.getRol());
-		caller.writer.writeString(Data.getKey());
+		caller.writer.writeInteger(Data.getInt(Data.USERID));
+		caller.writer.writeString(Data.getString(Data.ROLE));
+		caller.writer.writeString(Data.getString(Data.KEY));
 		caller.writer.writeString("UpdateDeviceInfo");
 		caller.writer.writeByte((byte) 1);
 		caller.writer.writeInt32(0);
 		final int pos = caller.writer.pos;
 		caller.writer.writeVariant(2);
-		caller.writer.writeVariant(Integer.parseInt(Data.getDeviceCode()));
+		caller.writer.writeVariant(Integer.parseInt(Data.getString(Data.DEVICECODE)));
 		caller.writer.writeVariant(String.format("Android %s(Model: %s)", Global.Device.OSVersion, Global.Device.Model));
 		caller.writer.writeVariant("1.0.21");
 		caller.writer.writePlaceholderWithSize(pos);
 		caller.response = null;
 		if (caller.MakeTheCall(MediusCall.clientID, caller.ROInterface, caller.ROMethod, caller.writer.getBuffer(), caller.writer.pos)) return caller;
+		return null;
+	}
+
+	public static DataTable[] synchViaDD(final String s, final Object... array) {
+		final MediusCall mediusCall = getCaller("MaestroLogin", "MaestroCall");
+		mediusCall.writer.writeString("SynchViaDD");
+		mediusCall.writer.writeByte((byte) 1);
+		mediusCall.writer.writeInt32(0);
+		final int pos = mediusCall.writer.pos;
+		mediusCall.writer.writeVariant(s);
+		for (Object o : array)
+			mediusCall.writer.writeVariant(o);
+
+		mediusCall.writer.writePlaceholderWithSize(pos);
+		mediusCall.response = null;
+		if (mediusCall.MakeTheCall(MediusCall.clientID, mediusCall.ROInterface, mediusCall.ROMethod, mediusCall.writer.getBuffer(), mediusCall.writer.pos)) {
+			try {
+				final Serializer serializer = new Serializer(mediusCall.response);
+				if (serializer.readROBoolean()) {
+					serializer.SkipROBinary();
+					return Global.processDataTableResponse(serializer, -1);
+				}
+			} catch (IOException ex) {
+				Log.e(TAG, "synchViaDD Error" + ex);
+			}
+		}
 		return null;
 	}
 }

@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +22,7 @@ public final class Global {
 	public static String MD5Hash = "";
 	private static final String TAG = "Global";
 	private static Map<String, Object> sharedDictionary = new HashMap<String, Object>();
-	public static Context AppContext;
+	public static Context appContext;
 	public static Date NODATE;
 	public static boolean doMediusCallToServer;
 	public static List<HashMap<String, String>> profiles;
@@ -55,26 +56,26 @@ public final class Global {
 	}
 
 	public static SharedPreferences getSharedPreferences() {
-		if (AppContext == null) return null;
-		return AppContext.getSharedPreferences("com.wart.magister.global", Context.MODE_PRIVATE);
+		if (appContext == null) return null;
+		return appContext.getSharedPreferences(Data.APPNAME, Context.MODE_PRIVATE);
 	}
 
 	public static boolean isNullOrEmpty(String paramString) {
 		return paramString == null || paramString.equals("") || paramString.equalsIgnoreCase("null") || paramString.length() <= 0;
 	}
 
-	public static void setSharedPreferenceValues(final String s2, final Object o) {
-		if (Global.AppContext != null) {
+	public static void setSharedPreferenceValues(final String key, final Object value) {
+		if (Global.appContext != null) {
 			final SharedPreferences getSharedPreferenceValue = getSharedPreferences();
 			if (getSharedPreferenceValue != null) {
 				final SharedPreferences.Editor edit = getSharedPreferenceValue.edit();
-				if (o instanceof String) edit.putString(s2, toDBString(o));
-				else if (o instanceof Integer) edit.putInt(s2, toDBInt(o));
-				else if (o instanceof Boolean) edit.putBoolean(s2, toDBBool(o));
-				else if (o instanceof Date) edit.putString(s2, ((Date) o).toGMTString());
+				if (value instanceof String) edit.putString(key, toDBString(value));
+				else if (value instanceof Integer) edit.putInt(key, toDBInt(value));
+				else if (value instanceof Boolean) edit.putBoolean(key, toDBBool(value));
+				else if (value instanceof Date) edit.putString(key, ((Date) value).toGMTString());
 
-				if (edit.commit()) Log.v("Global", String.format("Opslaan %s gelukt", s2));
-				else Log.w("Global", String.format("Opslaan %s mislukt!", s2));
+				if (edit.commit()) Log.v("Global", String.format("Opslaan %s gelukt", key));
+				else Log.w("Global", String.format("Opslaan %s mislukt!", key));
 			}
 		}
 	}
@@ -84,8 +85,8 @@ public final class Global {
 	}
 
 	public boolean isOnline() {
-		if (AppContext == null) return false;
-		ConnectivityManager cm = (ConnectivityManager) AppContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+		if (appContext == null) return false;
+		ConnectivityManager cm = (ConnectivityManager) appContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 		return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
 	}
 
@@ -95,19 +96,19 @@ public final class Global {
 	}
 
 	public static void updateCurrentProfile() {
-		if (Global.profiles != null) {
+		if (profiles != null) {
 			int n = 0;
 			int n2 = -1;
 			for (int n3 = 0; n3 < Global.profiles.size() && n == 0; ++n3) {
-				if (toDBString(Global.profiles.get(n3).get("naam")).equalsIgnoreCase(Data.getFullName())) {
+				if (toDBString(Global.profiles.get(n3).get("naam")).equalsIgnoreCase(Data.getString(Data.FULLNAME))) {
 					n2 = n3;
 					n = 1;
 				}
 			}
 			if (n2 > -1) {
 				final HashMap<String, String> hashMap = Global.profiles.get(n2);
-				hashMap.remove("magistersuite");
-				hashMap.put("magistersuite", Data.getMagisterSuite());
+				hashMap.remove(Data.MAGISTER_SUITE);
+				hashMap.put(Data.MAGISTER_SUITE, Data.getString(Data.MAGISTER_SUITE));
 				saveProfile();
 			}
 		}
@@ -115,7 +116,7 @@ public final class Global {
 
 	public static void saveProfile() {
 		try {
-			File file = new File(AppContext.getDir("profile", Context.MODE_PRIVATE), "map");
+			File file = new File(appContext.getDir("profile", Context.MODE_PRIVATE), "map");
 			ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(file));
 			outputStream.writeObject(profiles);
 			outputStream.flush();
@@ -127,9 +128,9 @@ public final class Global {
 	}
 
 	public static String getMD5Hash() {
-		if (isNullOrEmpty(Global.MD5Hash) && Global.AppContext != null) {
+		if (isNullOrEmpty(Global.MD5Hash) && Global.appContext != null) {
 			try {
-				File file = new File(Global.AppContext.getPackageCodePath());
+				File file = new File(Global.appContext.getPackageCodePath());
 				FileInputStream fis = new FileInputStream(file);
 				byte[] array = new byte[(int) file.length()];
 				int read;
@@ -149,4 +150,20 @@ public final class Global {
 		}
 		return Global.MD5Hash;
 	}
+
+	public static DataTable[] processDataTableResponse(final Serializer serializer, int tableCount) {
+		try {
+			final ArrayList<DataTable> list = new ArrayList<DataTable>();
+			for (int i = 0; serializer.pos < serializer.getBufferLength() && (tableCount == -1 || i < tableCount); i++)
+				list.add(serializer.readDataTable());
+
+			final DataTable[] array = new DataTable[list.size()];
+			list.toArray(array);
+			return array;
+		} catch (Exception ex) {
+			Log.e(TAG, "processDataTableResponse Error", ex);
+		}
+		return null;
+	}
+
 }

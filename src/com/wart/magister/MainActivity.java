@@ -31,7 +31,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
 		setContentView(R.layout.activity_main);
 
 		// Initialize Global
-		Global.AppContext = this;
+		Global.appContext = this;
 
 		// Set up the action bar to show a dropdown list.
 		final ActionBar actionBar = getActionBar();

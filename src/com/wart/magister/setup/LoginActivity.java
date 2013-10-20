@@ -54,7 +54,7 @@ public class LoginActivity extends Activity {
 
 		// Set up the login form.
 		mLicenseView = (TextView) findViewById(R.id.license);
-		mLicenseView.setText(Data.getLicense());
+		mLicenseView.setText(Data.getString(Data.LICENSE));
 
 		mUsernameView = (EditText) findViewById(R.id.username);
 		mUsernameView.setText(mUsername);

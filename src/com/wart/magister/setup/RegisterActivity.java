@@ -46,7 +46,7 @@ public class RegisterActivity extends Activity {
 	class RegisterTask extends AsyncTask<Void, String, Void> {
 
 		private static final String TAG = "RegisterTask";
-		private static final String ERRROR = "Error";
+		private static final String ERROR = "Error";
 
 		@Override
 		protected void onPreExecute() {
@@ -59,12 +59,15 @@ public class RegisterActivity extends Activity {
 
 		@Override
 		protected void onProgressUpdate(String... strings) {
+			if (strings[0] == ERROR) {
+				// TODO Handle errors on the GUI
+			}
 
 		}
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			publishProgress(Data.getLicense());
+			publishProgress(Data.getString(Data.LICENSE));
 
 			HashMap<String, String> tableNamesHash = new HashMap<String, String>();
 			tableNamesHash.put("gebruiker", "Profiel");
@@ -75,11 +78,11 @@ public class RegisterActivity extends Activity {
 			DataTable settings = new DataTable("os", "hardwareid", "appname", "appversion", "suite", "rol");
 			DataRow srow = settings.newRow();
 			srow.put("os", "Android " + Global.Device.OSVersion + "(Model: " + Global.Device.Model + ")");
-			srow.put("appname", Data.getAppName());
+			srow.put("appname", Data.getString(Data.APPNAME));
 			srow.put("appversion", Global.Device.Version);
 			srow.put("hardwareid", Global.Device.HardwareID);
-			srow.put("suite", Data.getMagisterSuite());
-			srow.put("rol", Data.getRol());
+			srow.put("suite", Data.getString(Data.MAGISTER_SUITE));
+			srow.put("rol", Data.getString(Data.ROLE));
 			settings.add(srow);
 			MediusCall call = MediusCall.RegisterDevice(settings);
 			if (call != null) {
@@ -95,8 +98,8 @@ public class RegisterActivity extends Activity {
 						Iterator<HashMap<String, String>> iterator = Global.profiles.iterator();
 						while (iterator.hasNext()) {
 							HashMap<String, String> hash = iterator.next();
-							if (Global.toDBString(hash.get("code")).equals(Global.toDBString(dt.get(0x0).get("code"))) && Global.toDBString(hash.get("medius")).equals(Data.formatMediusUrl(Data.getMediusURL()))) {
-								publishProgress(ERRROR, "Dit profiel bestaat al. Deinstalleer de applicatie om je profiel opnieuw aan te maken met een nieuwe uitnodiging. Het personaliseren wordt nu afgebroken.");
+							if (Global.toDBString(hash.get("code")).equals(Global.toDBString(dt.get(0x0).get("code"))) && Global.toDBString(hash.get("medius")).equals(Data.getString(Data.MEDIUSURL))) {
+								publishProgress(ERROR, "Dit profiel bestaat al. Deinstalleer de applicatie om je profiel opnieuw aan te maken met een nieuwe uitnodiging. Het personaliseren wordt nu afgebroken.");
 								return null;
 
 							}
@@ -110,15 +113,14 @@ public class RegisterActivity extends Activity {
 							if (dt.TableName.equalsIgnoreCase("gebruiker")) {
 								status = "Profiel";
 								DataRow row = dt.get(0);
-								Data.setUsername(Global.toDBString(row.get("loginnaam")));
-								Data.setUserId(Global.toDBInt(row.get("idgebr")));
-								Data.setIdType(Global.toDBInt(row.get("idtype")));
-								Data.setFullName(Global.toDBString(row.get("naam_vol")));
-								Data.setDeviceCode(Global.toDBString(row.get("devicecode")));
-								Data.setEmployeeId(Global.toDBInt(row.get("idpers")));
-								Data.setStudentId(Global.toDBInt(row.get("idleer")));
-								Data.setKey(Data.getDeviceCode() + "|" + Global.getVersionFromPackageInfo() + "|" + Global.getMD5Hash());
-								Data.setRol("leerling");
+								Data.set(Data.USERNAME, Global.toDBString(row.get("loginnaam")));
+								Data.set(Data.USERID, Global.toDBInt(row.get("idgebr")));
+								Data.set(Data.IDTYPE, Global.toDBInt(row.get("idtype")));
+								Data.set(Data.FULLNAME, Global.toDBString(row.get("naam_vol")));
+								Data.set(Data.DEVICECODE, Global.toDBString(row.get("devicecode")));
+								Data.set(Data.EMPLOYEEID, Global.toDBInt(row.get("idpers")));
+								Data.set(Data.STUDENTID, Global.toDBInt(row.get("idleer")));
+								Data.set(Data.KEY, Data.getString(Data.DEVICECODE) + "|" + Global.getVersionFromPackageInfo() + "|" + Global.getMD5Hash());
 							} else if (tableNamesHash.containsKey(dt.TableName.toLowerCase(Locale.ENGLISH).trim())) status = tableNamesHash.get(dt.TableName.toLowerCase().trim());
 							publishProgress("Downloading: " + status);
 							// TODO: Fix this: database.AddTable(dt, true);
@@ -142,7 +144,7 @@ public class RegisterActivity extends Activity {
 						DataTable rechtenTable = reader.readDataTable();
 						DataTable betaald = reader.readDataTable();
 						String foutStr = reader.getLastError();
-						if (!Global.isNullOrEmpty(foutStr)) publishProgress(ERRROR, foutStr);
+						if (!Global.isNullOrEmpty(foutStr)) publishProgress(ERROR, foutStr);
 
 						// TODO: Implement the rechtenTable DataTable
 						if (rechtenTable != null) for (DataRow row : rechtenTable)
@@ -154,22 +156,22 @@ public class RegisterActivity extends Activity {
 							for (Entry<String, Object> e : row.entrySet())
 								Log.v(TAG, e.getKey() + "=" + e.getValue());
 
-						if (magisterSuite.equalsIgnoreCase(Data.getMagisterSuite()) || magisterSuite.equalsIgnoreCase("")) {
-							if (magisterSuite.equalsIgnoreCase("") && Data.getMagisterSuite().equalsIgnoreCase("")) {
-								Data.setMagisterSuite("5.3.7");
-								Data.setKey(Data.getDeviceCode() + "|" + Global.getVersionFromPackageInfo());
+						if (magisterSuite.equalsIgnoreCase(Data.getString(Data.MAGISTER_SUITE)) || magisterSuite.equalsIgnoreCase("")) {
+							if (magisterSuite.equalsIgnoreCase("") && Data.getString(Data.MAGISTER_SUITE).equalsIgnoreCase("")) {
+								Data.set(Data.MAGISTER_SUITE, "5.3.7");
+								Data.set(Data.KEY, Data.getString(Data.DEVICECODE) + "|" + Global.getVersionFromPackageInfo());
 								Global.updateCurrentProfile();
 							}
 						} else {
-							Data.setMagisterSuite(magisterSuite);
-							Data.setKey(Data.getDeviceCode() + "|" + Global.getVersionFromPackageInfo());
+							Data.set(Data.MAGISTER_SUITE, magisterSuite);
+							Data.set(Data.KEY, Data.getString(Data.DEVICECODE) + "|" + Global.getVersionFromPackageInfo());
 							Global.updateCurrentProfile();
 						}
 					}
-					if (Global.isNullOrEmpty(Data.getMagisterSuite())) publishProgress(ERRROR, "Er is een fout opgetreden tijdens het installeren. Onbekende Magistersuite versie.");
+					if (Global.isNullOrEmpty(Data.getString(Data.MAGISTER_SUITE))) publishProgress(ERROR, "Er is een fout opgetreden tijdens het installeren. Onbekende Magistersuite versie.");
 
 				} catch (Exception ex) {
-					publishProgress(ERRROR, "Error tijdens personalisatie.");
+					publishProgress(ERROR, "Error tijdens personalisatie.");
 					Log.e(TAG, "Exception in RegisterActivity", ex);
 					// TODO:
 					// Global.bAuthenticate = false;
