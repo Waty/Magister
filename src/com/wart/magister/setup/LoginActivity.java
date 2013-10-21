@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,7 +19,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.wart.magister.Data;
-import com.wart.magister.Global;
 import com.wart.magister.MediusCall;
 import com.wart.magister.R;
 
@@ -191,12 +191,14 @@ public class LoginActivity extends Activity {
 	 */
 	public class UserLoginTask extends AsyncTask<Void, String, Boolean> {
 		private static final String TAG = "UserLoginTask";
+		public String error;
 
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			if (!isCancelled()) {
 				if (MediusCall.Login(mUsername, mPassword) || MediusCall.getLoggedInState() == 0x5) return true;
-				Log.e(TAG, Global.toDBString(MediusCall.getResultStr()));
+				error = MediusCall.getResultStr();
+				Log.e(TAG, error);
 			}
 			return false;
 		}
@@ -206,10 +208,10 @@ public class LoginActivity extends Activity {
 			mAuthTask = null;
 			showProgress(false);
 
-			if (success) finish();
+			if (success) LoginActivity.this.startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
 			else {
 				Log.i(TAG, "Couldn't Login :-(");
-				mPasswordView.setError(getString(R.string.error_incorrect_password));
+				mPasswordView.setError(error);
 				mPasswordView.requestFocus();
 			}
 		}

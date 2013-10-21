@@ -45,7 +45,7 @@ import com.wart.magister.R;
 import com.wart.magister.Serializer;
 
 public class SelectSchoolActivity extends Activity {
-	private static final String TAG = "SelectSchoolActivityError";
+	private static final String TAG = "SelectSchoolActivity";
 
 	private ArrayList<School> mRetrievedSchools = null;
 	private RetrieveSchoolsTask mRetrieveTask = null;
@@ -206,8 +206,9 @@ public class SelectSchoolActivity extends Activity {
 
 		@Override
 		protected Boolean doInBackground(School... params) {
-			Data.set(Data.MEDIUSURL, params[0].URL);
+			Data.set(Data.MEDIUSURL, Data.buildMediusUrl(params[0].URL));
 			HttpPost post = new HttpPost(Data.getString(Data.MEDIUSURL));
+			Log.v(TAG, "posting to " + post.getURI());
 			byte[] request = new byte[54];
 			request[0] = 0x52;
 			request[1] = 0x4f;
@@ -264,7 +265,6 @@ public class SelectSchoolActivity extends Activity {
 
 					Serializer serializer = new Serializer(content.toByteArray());
 					if (serializer.readROHeader(null, "login", "getschoolname")) {
-
 						Data.set(Data.LICENSE, serializer.readString());
 						MediusCall.setLicense(Data.getString(Data.LICENSE));
 						return true;

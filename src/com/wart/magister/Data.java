@@ -25,7 +25,7 @@ public class Data {
 
 	public static String buildMediusUrl(final String url) {
 		final String formattedUrl = formatMediusUrl(url);
-		if (formattedUrl.length() > 1 && !formattedUrl.endsWith("/mwp/mobile/meta.medius.axd")) return String.valueOf(formattedUrl) + "/mwp/mobile/meta.medius.axd";
+		if (formattedUrl.length() > 1 && !formattedUrl.endsWith(MEDIUSFORWARDER)) return String.valueOf(formattedUrl) + MEDIUSFORWARDER;
 		return formattedUrl;
 	}
 
@@ -39,10 +39,10 @@ public class Data {
 		if (!medius.startsWith("http")) medius = "https://" + medius;
 		else if (medius.startsWith("http://")) medius = medius.replaceFirst("http", "https");
 
-		final Uri parse = Uri.parse(medius);
-		final String authority = parse.getAuthority();
+		final Uri url = Uri.parse(medius);
+		final String authority = url.getAuthority();
 		if (authority != null) {
-			String scheme = parse.getScheme();
+			String scheme = url.getScheme();
 			if (!scheme.equalsIgnoreCase("https")) scheme = "https";
 			return String.format("%s://%s", scheme, authority);
 		}

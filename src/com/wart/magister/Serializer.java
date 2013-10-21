@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 public class Serializer {
-	
+
 	public static enum VariantType {
 		Boolean(11), Byte(17), Char(22), Currency(6), Date(7), Decimal(14), Double(5), Empty(0), Error(10), Int64(20), Integer(3), LongWord(19), Null(1), Object(12), ShortInt(16), Single(4), SmallInt(2), String(8), UInt64(21), Undefined(65535), Word(
 				18);
@@ -222,7 +222,7 @@ public class Serializer {
 		pos += 28;
 		switch (b) {
 		default:
-			throw new ROException("Onbekend messagetype");
+			throw new ROException("Unknown messagetype");
 
 		case 0:
 			final String string = readString();
@@ -437,10 +437,12 @@ public class Serializer {
 			writeString("");
 		}
 		writeInteger(table.size());
-		if (size > 0) for (DataRow row : table) {
-			writeInteger(row.size());
-			for (DataColumn column : table.Columns)
-				writeVariant(row.get(column.Name));
+		if (size > 0) {
+			for (DataRow row : table) {
+				writeInteger(row.size());
+				for (DataColumn column : table.Columns)
+					writeVariant(row.get(column.Name));
+			}
 		}
 	}
 
@@ -530,7 +532,7 @@ public class Serializer {
 		writeInteger(value ? 1 : 0);
 	}
 
-	public void WriteROHeader(byte[] clientID, String Interface, String Method) {
+	public void writeROHeader(byte[] clientID, String Interface, String Method) {
 		System.arraycopy(ROHeader, 0, buffer, pos, ROHeader.length);
 		pos += 12;
 		System.arraycopy(clientID, 0, buffer, pos, clientID.length);
@@ -570,49 +572,70 @@ public class Serializer {
 		}
 		VariantType localVariantType = VarType(hObject);
 		writeVariantType(localVariantType);
-		switch (localVariantType.ordinal()) {
-		case 3:
-			writeSmallInt(((Short) hObject).shortValue());
-			break;
-		case 4:
-		case 11:
+		switch (localVariantType) {
+		case Boolean:
 			writeBoolean(((Boolean) hObject).booleanValue());
 			return;
-		case 20:
+		case Byte:
 			writeByte(((Byte) hObject).byteValue());
 			return;
-		case 5:
-			writeFloat((Float) hObject);
-			return;
-		case 6:
-		case 7:
-			writeDouble(((Double) hObject).doubleValue());
-			return;
-		case 8:
-			writeDateTime((Date) hObject);
-			return;
-		case 9:
-			writeString(hObject.toString());
-			return;
-		case 17:
-			writeInt32(((Integer) hObject).intValue());
-			return;
-
-		case 14:
-			writeShortInt(((Short) hObject).shortValue());
-			return;
-
-		case 15:
-			writeByte(((Byte) hObject).byteValue());
-			return;
-
-		case 16:
-			writeWord(((Short) hObject).shortValue());
-			return;
-
-		case 19:
-			writeInt64(((Long) hObject).longValue());
-			return;
+		case Char:
+			break;
+		case Currency:
+			break;
+		case Date:
+			break;
+		case Decimal:
+			break;
+		case Double:
+			break;
+		case Empty:
+			break;
+		case Error:
+			break;
+		case Int64:
+			break;
+		case Integer:
+			break;
+		case LongWord:
+			break;
+		case Null:
+			break;
+		case Object:
+			break;
+		case ShortInt:
+			break;
+		case Single:
+			break;
+		case SmallInt:
+			break;
+		case String:
+			break;
+		case UInt64:
+			break;
+		case Undefined:
+			break;
+		case Word:
+			break;
+		default:
+			break;/*
+				 * case 3: writeSmallInt(((Short) hObject).shortValue()); break;
+				 * case 4: case 11: case 20: case 5: writeFloat((Float)
+				 * hObject); return; case 6: case 7: writeDouble(((Double)
+				 * hObject).doubleValue()); return; case 8: writeDateTime((Date)
+				 * hObject); return; case 9: writeString(hObject.toString());
+				 * return; case 17: writeInt32(((Integer) hObject).intValue());
+				 * return;
+				 * 
+				 * case 14: writeShortInt(((Short) hObject).shortValue());
+				 * return;
+				 * 
+				 * case 15: writeByte(((Byte) hObject).byteValue()); return;
+				 * 
+				 * case 16: writeWord(((Short) hObject).shortValue()); return;
+				 * 
+				 * case 19: writeInt64(((Long) hObject).longValue()); return;
+				 */
 		}
 	}
 

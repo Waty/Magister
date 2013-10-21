@@ -22,16 +22,13 @@ import com.wart.magister.Serializer;
 
 public class RegisterActivity extends Activity {
 
-	enum RegisterStatus {
-		RegisteringDevice, DownloaadingProfile
-	};
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_register);
 		// Show the Up button in the action bar.
 		getActionBar().setDisplayHomeAsUpEnabled(true);
+		new RegisterTask().execute();
 	}
 
 	@Override
@@ -49,19 +46,15 @@ public class RegisterActivity extends Activity {
 		private static final String ERROR = "Error";
 
 		@Override
-		protected void onPreExecute() {
-
-		}
-
-		@Override
 		protected void onPostExecute(Void voids) {
+			Log.i(TAG, "Finished registering this device");
 		}
 
 		@Override
 		protected void onProgressUpdate(String... strings) {
-			if (strings[0] == ERROR) {
-				// TODO Handle errors on the GUI
-			}
+			// TODO Handle errors on the GUI
+			if (strings[0] == ERROR) Log.e(TAG, strings[1]);
+			else Log.i(TAG, strings[0]);
 
 		}
 
@@ -122,7 +115,7 @@ public class RegisterActivity extends Activity {
 								Data.set(Data.STUDENTID, Global.toDBInt(row.get("idleer")));
 								Data.set(Data.KEY, Data.getString(Data.DEVICECODE) + "|" + Global.getVersionFromPackageInfo() + "|" + Global.getMD5Hash());
 							} else if (tableNamesHash.containsKey(dt.TableName.toLowerCase(Locale.ENGLISH).trim())) status = tableNamesHash.get(dt.TableName.toLowerCase().trim());
-							publishProgress("Downloading: " + status);
+							publishProgress(String.format("Downloading %s...", status));
 							// TODO: Fix this: database.AddTable(dt, true);
 							if (reader.pos < datalen) dt = reader.readDataTable();
 							else dt = null;
@@ -173,10 +166,6 @@ public class RegisterActivity extends Activity {
 				} catch (Exception ex) {
 					publishProgress(ERROR, "Error tijdens personalisatie.");
 					Log.e(TAG, "Exception in RegisterActivity", ex);
-					// TODO:
-					// Global.bAuthenticate = false;
-					// Global.LoadMenuStructure();
-					// publishProgress(new String[0x1]);
 				}
 			}
 			return null;

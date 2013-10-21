@@ -108,7 +108,7 @@ public class MediusCall {
 		MediusCall.clientID = new byte[0];
 
 		final MediusCall mediusCall = new MediusCall();
-		mediusCall.writer.WriteROHeader(MediusCall.clientID, "Global", "Authenticate");
+		mediusCall.writer.writeROHeader(MediusCall.clientID, "Global", "Authenticate");
 		if (Global.isNullOrEmpty(Data.getString(Data.USERNAME))) mediusCall.writer.writeString(Data.getString(Data.APPNAME));
 		else mediusCall.writer.writeString(String.format("%s:%s", Data.getString(Data.USERNAME), Data.getString(Data.APPNAME)));
 		mediusCall.writer.writeString(randomUUID.toString());
@@ -254,7 +254,7 @@ public class MediusCall {
 		final MediusCall mediusCall = new MediusCall();
 		mediusCall.ROInterface = roInterface;
 		mediusCall.ROMethod = roMethod;
-		mediusCall.writer.WriteROHeader(MediusCall.clientID, roInterface, roMethod);
+		mediusCall.writer.writeROHeader(MediusCall.clientID, roInterface, roMethod);
 		if (withCredentials) {
 			mediusCall.writer.writeInteger(Data.getInt(Data.USERID));
 			mediusCall.writer.writeString(Data.getString(Data.ROLE));
@@ -507,7 +507,7 @@ public class MediusCall {
 
 	public static String getSchoolName() {
 		MediusCall mediusCall = new MediusCall();
-		mediusCall.writer.WriteROHeader(clientID, "Login", "GetSchoolName");
+		mediusCall.writer.writeROHeader(clientID, "Login", "GetSchoolName");
 		mediusCall.ROInterface = "Login";
 		mediusCall.ROMethod = "GetSchoolName";
 		mediusCall.response = null;
@@ -526,7 +526,7 @@ public class MediusCall {
 
 	public static String getMediusVersion() {
 		MediusCall mediusCall = new MediusCall();
-		mediusCall.writer.WriteROHeader(clientID, "Global", "GetAppVersionForDB");
+		mediusCall.writer.writeROHeader(clientID, "Global", "GetAppVersionForDB");
 		mediusCall.writer.writeString("");
 		mediusCall.writer.writeString("");
 		mediusCall.MakeTheCall(clientID, "Global", "GetAppVersionForDB", mediusCall.writer.getBuffer(), mediusCall.writer.pos);
