@@ -1,7 +1,6 @@
 package com.wart.magister;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -97,13 +96,13 @@ public class DataTable extends ArrayList<DataRow> {
 		return row;
 	}
 
-	public void Sort(String var1) {
-		Collections.sort(this, new DataRowComparer(var1.split(","), true));
-	}
-
-	public void Sort(String var1, boolean var2) {
-		Collections.sort(this, new DataRowComparer(var1.split(","), var2));
-	}
+	// public void Sort(String var1) {
+	// Collections.sort(this, new DataRowComparer(var1.split(","), true));
+	// }
+	//
+	// public void Sort(String var1, boolean var2) {
+	// Collections.sort(this, new DataRowComparer(var1.split(","), var2));
+	// }
 
 	public ArrayList<DataRow> toSerializebleArray() {
 		return new ArrayList<DataRow>(this);

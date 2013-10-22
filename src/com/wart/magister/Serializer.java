@@ -7,11 +7,16 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import android.util.Log;
+
 public class Serializer {
 
+	public static final String TAG = "Serializer";
+
 	public static enum VariantType {
-		Boolean(11), Byte(17), Char(22), Currency(6), Date(7), Decimal(14), Double(5), Empty(0), Error(10), Int64(20), Integer(3), LongWord(19), Null(1), Object(12), ShortInt(16), Single(4), SmallInt(2), String(8), UInt64(21), Undefined(65535), Word(
-				18);
+		Empty, Null, SmallInt, Integer, Single, Double, Currency, Date, String, Error, Boolean, Object, Decimal, ShortInt, Byte, Word, LongWord, Int64, UInt64, Char, Undefined;
+
+		public static final String TAG = "VariantType";
 
 		public static boolean isArrayType(short paramShort) {
 			return (paramShort & 0x2000) != 0;
@@ -19,36 +24,22 @@ public class Serializer {
 
 		public static VariantType shortBitsToVariantType(short paramShort) {
 			int param = (short) (paramShort & 0xFFF);
-			VariantType[] arrayOfVariantType = values();
-			int length = arrayOfVariantType.length;
-			for (int i = 0; i < length; i++)
-				if (param == arrayOfVariantType[i].value) return arrayOfVariantType[i];
+
+			for (VariantType variantType : VariantType.values()) {
+				if (variantType.ordinal() == param) return variantType;
+				else Log.w(TAG, "param was " + param + ", variantType was " + variantType);
+			}
 			return Undefined;
 		}
 
-		private int value;
-
-		private VariantType(int value) {
-			this.value = value;
-		}
-
-		public int getValue() {
-			return value;
-		}
 	}
 
 	private static int daylightOffset = -1;
-	private static int lastTimezoneOffset;
-	static final byte[] ROHeader;
+	private static int lastTimezoneOffset = -1;
+	static final byte[] ROHeader = {82, 79, 49, 48, 55};
 	private static final double TIME_OFFSET_MEDIUS = 25569.0D;
-	private static TimeZone timezone;
+	private static TimeZone timezone = null;
 	private static int timezoneOffset = -1;
-	static {
-		lastTimezoneOffset = -1;
-		timezone = null;
-		byte[] arrayOfByte = {82, 79, 49, 48, 55};
-		ROHeader = arrayOfByte;
-	}
 
 	public static byte[] concat(byte[] a, byte[] b) {
 		byte[] result = new byte[a.length + b.length];
@@ -66,13 +57,13 @@ public class Serializer {
 	}
 
 	private static void initializeOffsets(Date date) {
-		if (lastTimezoneOffset != date.getTimezoneOffset()) {
-			lastTimezoneOffset = date.getTimezoneOffset();
-			Calendar localCalendar = Calendar.getInstance();
-			localCalendar.setTime(date);
-			timezone = localCalendar.getTimeZone();
-			timezoneOffset = localCalendar.get(15);
-			daylightOffset = localCalendar.get(16);
+		Calendar cal = Calendar.getInstance();
+		if (lastTimezoneOffset != (cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 60000) {
+			lastTimezoneOffset = (cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 60000;
+			cal.setTime(date);
+			timezone = cal.getTimeZone();
+			timezoneOffset = cal.get(15);
+			daylightOffset = cal.get(16);
 		}
 	}
 
@@ -565,77 +556,46 @@ public class Serializer {
 		writePlaceholderWithSize(pos);
 	}
 
-	public void writeVariant(Object hObject) {
-		if (hObject instanceof DataTable) {
-			writeDataTable((DataTable) hObject);
+	public void writeVariant(Object object) {
+		if (object instanceof DataTable) {
+			writeDataTable((DataTable) object);
 			return;
 		}
-		VariantType localVariantType = VarType(hObject);
+		VariantType localVariantType = VarType(object);
 		writeVariantType(localVariantType);
+
 		switch (localVariantType) {
+		case Date:
+			writeDateTime((Date) object);
+			return;
+		case String:
+			writeString((String) object);
+			return;
 		case Boolean:
-			writeBoolean(((Boolean) hObject).booleanValue());
+			writeBoolean(((Boolean) object).booleanValue());
+			return;
+		case ShortInt:
+			writeShortInt((Short) object);
 			return;
 		case Byte:
-			writeByte(((Byte) hObject).byteValue());
+			writeByte(((Byte) object).byteValue());
 			return;
-		case Char:
-			break;
-		case Currency:
-			break;
-		case Date:
-			break;
-		case Decimal:
-			break;
-		case Double:
-			break;
-		case Empty:
-			break;
-		case Error:
-			break;
-		case Int64:
-			break;
-		case Integer:
-			break;
-		case LongWord:
-			break;
-		case Null:
-			break;
-		case Object:
-			break;
-		case ShortInt:
-			break;
-		case Single:
-			break;
 		case SmallInt:
-			break;
-		case String:
-			break;
-		case UInt64:
-			break;
-		case Undefined:
-			break;
-		case Word:
-			break;
+			writeSmallInt(((Short) object).shortValue());
+			return;
+		case Integer:
+			writeInteger((Integer) object);
+			return;
+		case Int64:
+			writeInt64(((Long) object).longValue());
+			return;
+		case Single:
+			writeFloat((Float) object);
+		case Double:
+			writeDouble(((Double) object).doubleValue());
+			return;
 		default:
-			break;/*
-				 * case 3: writeSmallInt(((Short) hObject).shortValue()); break;
-				 * case 4: case 11: case 20: case 5: writeFloat((Float)
-				 * hObject); return; case 6: case 7: writeDouble(((Double)
-				 * hObject).doubleValue()); return; case 8: writeDateTime((Date)
-				 * hObject); return; case 9: writeString(hObject.toString());
-				 * return; case 17: writeInt32(((Integer) hObject).intValue());
-				 * return;
-				 * 
-				 * case 14: writeShortInt(((Short) hObject).shortValue());
-				 * return;
-				 * 
-				 * case 15: writeByte(((Byte) hObject).byteValue()); return;
-				 * 
-				 * case 16: writeWord(((Short) hObject).shortValue()); return;
-				 * 
-				 * case 19: writeInt64(((Long) hObject).longValue()); return;
-				 */
+			Log.i(TAG, "writeVariant didn't write " + localVariantType);
 		}
 	}
 

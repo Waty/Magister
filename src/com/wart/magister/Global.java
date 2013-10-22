@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,6 +17,10 @@ import java.util.Map;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 public final class Global {
@@ -32,6 +37,7 @@ public final class Global {
 	public static Date NODATE;
 	public static List<HashMap<String, String>> profiles;
 	private static Map<String, Object> sharedDictionary = new HashMap<String, Object>();
+	public static boolean bAuthenticate = false;
 
 	private static final String TAG = "Global";
 
@@ -115,7 +121,7 @@ public final class Global {
 				if (value instanceof String) edit.putString(key, toDBString(value));
 				else if (value instanceof Integer) edit.putInt(key, toDBInt(value));
 				else if (value instanceof Boolean) edit.putBoolean(key, toDBBool(value));
-				else if (value instanceof Date) edit.putString(key, ((Date) value).toGMTString());
+				else if (value instanceof Date) edit.putString(key, new SimpleDateFormat("dd MMM yyyy HH:mm:ss", Locale.ENGLISH).format((Date) value) + " GMT");
 
 				if (edit.commit()) Log.v("Global", String.format("Succesfully saved %s", key));
 				else Log.w("Global", String.format("Saving %s failed!", key));
@@ -165,6 +171,38 @@ public final class Global {
 				saveProfile();
 			}
 		}
+	}
+
+	public static String getHWID() {
+		String s;
+		if (Device.HardwareID != null && Device.HardwareID.length() > 4) return Device.HardwareID;
+
+		s = "";
+		try {
+			final TelephonyManager telephonyManager = (TelephonyManager) Global.appContext.getSystemService("phone");
+			if (telephonyManager != null) {
+				s = telephonyManager.getDeviceId();
+			}
+			if (s == null || s.length() < 5) {
+				s = Settings.Secure.getString(Global.appContext.getContentResolver(), "android_id");
+				if (s != null && s.equalsIgnoreCase("9774d56d682e549c")) s = null;
+			}
+			if (s == null || s.length() < 5) {
+				final WifiInfo connectionInfo = ((WifiManager) Global.appContext.getSystemService("wifi")).getConnectionInfo();
+				if (connectionInfo != null) {
+					s = connectionInfo.getMacAddress();
+					if (s != null && s.equalsIgnoreCase("-1")) s = null;
+				}
+			}
+			if (s == null || s.length() < 5) {
+				return "9774d56d682e549c_emulator";
+			}
+		} catch (Exception ex) {
+			Log.e(TAG, "Exception in determineHardwareID: ", ex);
+			return "unknown";
+		}
+		Log.i(TAG, "determined HWID=" + s);
+		return s;
 	}
 
 }

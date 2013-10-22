@@ -6,7 +6,9 @@ import java.util.Locale;
 import java.util.Map.Entry;
 
 import android.app.Activity;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
@@ -16,6 +18,7 @@ import com.wart.magister.Data;
 import com.wart.magister.DataRow;
 import com.wart.magister.DataTable;
 import com.wart.magister.Global;
+import com.wart.magister.Global.Device;
 import com.wart.magister.MediusCall;
 import com.wart.magister.R;
 import com.wart.magister.Serializer;
@@ -61,6 +64,15 @@ public class RegisterActivity extends Activity {
 		@Override
 		protected Void doInBackground(Void... params) {
 			publishProgress(Data.getString(Data.LICENSE));
+			try {
+				Device.Version = Global.appContext.getPackageManager().getPackageInfo(Global.appContext.getPackageName(), 0).versionName;
+				Device.OSVersion = Build.VERSION.RELEASE;
+				Device.Model = Build.MODEL;
+				Device.HardwareID = Global.getHWID();
+			} catch (NameNotFoundException e) {
+				e.printStackTrace();
+				return null;
+			}
 
 			HashMap<String, String> tableNamesHash = new HashMap<String, String>();
 			tableNamesHash.put("gebruiker", "Profiel");
@@ -70,7 +82,7 @@ public class RegisterActivity extends Activity {
 			tableNamesHash.put("agendaitem", "Agenda");
 			DataTable settings = new DataTable("os", "hardwareid", "appname", "appversion", "suite", "rol");
 			DataRow srow = settings.newRow();
-			srow.put("os", "Android " + Global.Device.OSVersion + "(Model: " + Global.Device.Model + ")");
+			srow.put("os", String.format("Android %s(Model: %s)", Device.OSVersion, Device.Model));
 			srow.put("appname", Data.getString(Data.APPNAME));
 			srow.put("appversion", Global.Device.Version);
 			srow.put("hardwareid", Global.Device.HardwareID);
@@ -78,12 +90,17 @@ public class RegisterActivity extends Activity {
 			srow.put("rol", Data.getString(Data.ROLE));
 			settings.add(srow);
 			MediusCall call = MediusCall.RegisterDevice(settings);
-			if (call != null) {
+			if (call == null) publishProgress(ERROR, MediusCall.error);
+			else {
 				try {
 					publishProgress("Registering device...");
 					Serializer reader = new Serializer(call.response);
 					reader.readROBoolean();
-					if (reader.readByte() != 1) return null;
+					if (reader.readByte() != 1) {
+						publishProgress(ERROR, "reader.readByte() was not 1! BufferLength was " + reader.getBufferLength() + ", reader.pos is " + reader.pos);
+						Global.bAuthenticate = false;
+						return null;
+					}
 
 					int datalen = reader.readInt32();
 					DataTable dt = reader.readDataTable();
